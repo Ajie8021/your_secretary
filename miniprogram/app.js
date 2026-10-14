@@ -9,7 +9,7 @@ App({
     wx.cloud.init({
       // 使用当前小程序关联的云开发环境
       // 正式部署时建议填写具体的云环境 ID
-      env: '云环境ID',
+      env: 'cloud1-d5gwgyva8b09b93ff',
       traceUser: true
     });
   },
