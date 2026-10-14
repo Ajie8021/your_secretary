@@ -8,5 +8,6 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f5f6f8"
   },
-  "style": "v2"
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
 }
