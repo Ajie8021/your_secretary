@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="title">备忘秘书</view>
+  <view class="subtitle">基础框架与登录模块测试</view>
+
+  <view wx:if="{{loading}}" class="status">
+    正在初始化用户资料……
+  </view>
+
+  <view wx:if="{{userInfo}}" class="panel">
+    <view class="success">登录初始化成功</view>
+
+    <view class="field">
+      <text class="label">用户 ID</text>
+      <text>{{userInfo.id}}</text>
+    </view>
+
+    <view class="field">
+      <text class="label">昵称</text>
+      <text>{{userInfo.nickname || '未设置'}}</text>
+    </view>
+
+    <view class="field">
+      <text class="label">性别</text>
+      <text>{{userInfo.gender}}</text>
+    </view>
+
+    <view class="field">
+      <text class="label">创建时间</text>
+      <text>{{userInfo.createTime}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="error-panel">
+    <view>初始化失败</view>
+    <view>{{errorMessage}}</view>
+  </view>
+
+  <button
+    type="primary"
+    bindtap="login"
+    loading="{{loading}}"
+    disabled="{{loading}}"
+  >
+    重新初始化
+  </button>
+</view>
