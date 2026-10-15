@@ -180,3 +180,30 @@ async function listTasks(input, openid) {
     }
   }, '查询任务列表成功');
 }
+
+/**
+ * 查询当前用户的一条任务详情。
+ */
+async function getTaskDetail(id, openid) {
+  if (typeof id !== 'string' || id.trim() === '') {
+    return failure(400, '任务 ID 不能为空');
+  }
+
+  const result = await db.collection('tasks')
+    .where({
+      _id: id.trim(),
+      _openid: openid
+    })
+    .limit(1)
+    .get();
+
+  if (result.data.length === 0) {
+    // 不区分任务不存在和任务属于其他用户，
+    // 避免泄露其他用户是否拥有该任务。
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  return success({
+    task: toPublicTask(result.data[0])
+  }, '查询任务详情成功');
+}
