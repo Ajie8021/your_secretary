@@ -33,7 +33,8 @@ function toPublicTask(task) {
     top: Boolean(task.top),
     remindAt: toISOString(task.remindAt),
     reminded: Boolean(task.reminded),
-    createTime: toISOString(task.createTime)
+    createTime: toISOString(task.createTime),
+    completed: Boolean(task.completed)
   };
 }
 
@@ -64,7 +65,8 @@ async function createTask(input, openid) {
     top: false,
     remindAt: validation.data.remindAt,
     reminded: false,
-    createTime: now
+    createTime: now,
+    completed: false
   };
 
   const result = await db.collection('tasks').add({
