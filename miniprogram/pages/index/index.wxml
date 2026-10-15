@@ -43,4 +43,9 @@
   >
     重新初始化
   </button>
+
+  <!-- <button bindtap="testCreateTask">
+    测试创建任务
+  </button> -->
+
 </view>

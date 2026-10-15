@@ -69,5 +69,55 @@ Page({
         loading: false
       });
     }
-  }
+  },
+
+  // /**
+  //  * 调用testCreateTask云函数，完成任务创建测试。
+  //  */
+  // async testCreateTask() {
+  //   wx.showLoading({
+  //     title: '正在创建'
+  //   });
+
+  //   try {
+  //     const result = await wx.cloud.callFunction({
+  //       name: 'task',
+  //       data: {
+  //         action: 'create',
+  //         data: {
+  //           name: '测试任务',
+  //           type: '学习',
+  //           level: 4,
+  //           ddl: '2026-10-20T12:00:00.000Z',
+  //           content: '用于验证任务创建功能',
+  //           images: []
+  //         }
+  //       }
+  //     });
+
+  //     const res = result.result;
+  //     console.log('创建任务返回结果：', res);
+
+  //     if (res.code === 0) {
+  //       wx.showToast({
+  //         title: '创建成功',
+  //         icon: 'success'
+  //       });
+  //     } else {
+  //       wx.showToast({
+  //         title: res.message || '创建失败',
+  //         icon: 'none'
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('创建任务调用失败：', error);
+
+  //     wx.showToast({
+  //       title: '调用失败，请查看控制台',
+  //       icon: 'none'
+  //     });
+  //   } finally {
+  //     wx.hideLoading();
+  //   }
+  // }
 });
