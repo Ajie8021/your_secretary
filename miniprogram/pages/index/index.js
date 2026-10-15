@@ -120,4 +120,35 @@ Page({
   //     wx.hideLoading();
   //   }
   // }
+
+  //  /**
+  //  * 调用testListTasks云函数进行任务列表测试。
+  //  */
+  //  async testListTasks() {
+  //   const result = await wx.cloud.callFunction({
+  //     name: 'task',
+  //     data: {
+  //       action: 'list',
+  //       page: 1,
+  //       pageSize: 20
+  //     }
+  //   });
+    
+  //   console.log('任务列表：', result.result);
+  // }
+
+  //  /**
+  //  * 调用testDetailTask云函数进行任务列表测试。
+  //  */
+  // async testDetailTask() {
+  //   const result = await wx.cloud.callFunction({
+  //     name: 'task',
+  //     data: {
+  //       action: 'detail',
+  //       id: '1a3ef1dd6ad03daa021bcfe93ca9ed49'
+  //     }
+  //   });
+    
+  //   console.log('任务详情：', result.result);
+  // }
 });

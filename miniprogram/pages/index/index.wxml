@@ -48,4 +48,12 @@
     测试创建任务
   </button> -->
 
+  <!-- <button bindtap="testListTasks">
+    测试任务列表查询
+  </button> -->
+
+  <!-- <button bindtap="testDetailTask">
+    测试任务详情查询
+  </button> -->
+
 </view>
