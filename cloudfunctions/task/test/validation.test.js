@@ -4,7 +4,8 @@ const assert = require('node:assert/strict');
 
 const {
   validateCreateTask,
-  parsePagination
+  parsePagination,
+  validateUpdateTask
 } = require('../validation');
 
 test('未填写名称时使用默认名称', () => {
@@ -106,4 +107,104 @@ test('拒绝非法页码和每页条数', () => {
   ]) {
     assert.equal(parsePagination(input).valid, false);
   }
+});
+
+/**
+ * 任务修改、删除、置顶与完成状态。
+ * 参数修改校验测试。
+ */
+test('修改任务时只返回用户提交的字段', () => {
+  const result = validateUpdateTask({
+    name: '  新任务名称  '
+  });
+
+  assert.equal(result.valid, true);
+
+  // 名称应去除首尾空格。
+  assert.equal(result.data.name, '新任务名称');
+
+  // 未提交的字段不应被自动补齐，否则可能覆盖数据库原值。
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(result.data, 'ddl'),
+    false
+  );
+});
+
+test('修改任务时允许同时更新多个合法字段', () => {
+  const result = validateUpdateTask({
+    name: '复习课程',
+    level: 3,
+    content: '复习第三章',
+    images: []
+  });
+
+  assert.equal(result.valid, true);
+  assert.equal(result.data.name, '复习课程');
+  assert.equal(result.data.level, 3);
+  assert.deepEqual(result.data.images, []);
+});
+
+test('拒绝不合法的任务等级', () => {
+  // 等级必须为 1 到 4 的整数。
+  for (const level of [0, 5, -1, 1.5, '3']) {
+    const result = validateUpdateTask({ level });
+
+    assert.equal(result.valid, false);
+  }
+});
+
+test('拒绝无效的截止时间和提醒时间', () => {
+  // 两种日期字段都必须是合法日期，空值则表示清除日期。
+  assert.equal(
+    validateUpdateTask({ ddl: 'invalid-date' }).valid,
+    false
+  );
+
+  assert.equal(
+    validateUpdateTask({ remindAt: 'invalid-date' }).valid,
+    false
+  );
+
+  // 用户可以显式清除已有的截止时间或提醒时间。
+  const result = validateUpdateTask({
+    ddl: null,
+    remindAt: null
+  });
+
+  assert.equal(result.valid, true);
+  assert.equal(result.data.ddl, null);
+  assert.equal(result.data.remindAt, null);
+});
+
+test('拒绝错误的图片列表和描述类型', () => {
+  // 图片必须是字符串数组，描述必须是字符串。
+  assert.equal(
+    validateUpdateTask({ images: 'image.png' }).valid,
+    false
+  );
+
+  assert.equal(
+    validateUpdateTask({ content: 123 }).valid,
+    false
+  );
+});
+
+test('拒绝空对象和非法参数对象', () => {
+  // 没有可修改字段时，不应执行无意义的更新。
+  assert.equal(validateUpdateTask({}).valid, false);
+
+  // null、数组等都不是合法的修改参数对象。
+  assert.equal(validateUpdateTask(null).valid, false);
+  assert.equal(validateUpdateTask([]).valid, false);
+});
+
+test('不能通过修改参数更改系统管理字段', () => {
+  // _openid、top、completed 等字段不属于普通修改接口的白名单。
+  const result = validateUpdateTask({
+    _openid: 'fake-user',
+    completed: true,
+    top: true
+  });
+
+  assert.equal(result.valid, false);
 });
