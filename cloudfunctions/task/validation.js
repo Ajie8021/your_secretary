@@ -108,7 +108,51 @@ function validateCreateTask(input) {
   };
 }
 
+/**
+ * 解析并校验分页参数。
+ * 默认第 1 页，每页 20 条，最大每页 100 条。
+ */
+function parsePagination(input = {}) {
+  const page = input.page === undefined ? 1 : input.page;
+  const pageSize = input.pageSize === undefined
+    ? 20
+    : input.pageSize;
+
+  const errors = [];
+
+  if (!Number.isInteger(page) || page < 1) {
+    errors.push('页码 page 必须是大于等于 1 的整数');
+  }
+
+  if (
+    !Number.isInteger(pageSize) ||
+    pageSize < 1 ||
+    pageSize > 100
+  ) {
+    errors.push('每页条数 pageSize 必须是 1 到 100 的整数');
+  }
+
+  if (errors.length > 0) {
+    return {
+      valid: false,
+      errors
+    };
+  }
+
+  return {
+    valid: true,
+    errors: [],
+    data: {
+      page,
+      pageSize,
+      skip: (page - 1) * pageSize
+    }
+  };
+}
+
+
 module.exports = {
   parseDate,
-  validateCreateTask
+  validateCreateTask,
+  parsePagination
 };
