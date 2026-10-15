@@ -260,6 +260,88 @@ async function deleteTask(id, openid) {
   }, '任务删除成功');
 }
 
+/**
+ * 切换任务置顶状态。
+ */
+async function toggleTaskTop(id, openid) {
+  if (typeof id !== 'string' || id.trim() === '') {
+    return failure(400, '任务 ID 不能为空');
+  }
+
+  const collection = db.collection('tasks');
+
+  const result = await collection.where({
+    _id: id.trim(),
+    _openid: openid
+  }).limit(1).get();
+
+  if (result.data.length === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  const current = result.data[0];
+  const nextTop = !Boolean(current.top);
+
+  const updateResult = await collection.where({
+    _id: id.trim(),
+    _openid: openid
+  }).update({
+    data: {
+      top: nextTop
+    }
+  });
+
+  if (!updateResult.stats || updateResult.stats.updated === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  return success({
+    id: id.trim(),
+    top: nextTop
+  }, nextTop ? '任务已置顶' : '已取消置顶');
+}
+
+/**
+ * 切换任务完成状态。
+ */
+async function toggleTaskComplete(id, openid) {
+  if (typeof id !== 'string' || id.trim() === '') {
+    return failure(400, '任务 ID 不能为空');
+  }
+
+  const collection = db.collection('tasks');
+
+  const result = await collection.where({
+    _id: id.trim(),
+    _openid: openid
+  }).limit(1).get();
+
+  if (result.data.length === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  const current = result.data[0];
+  const nextCompleted = !Boolean(current.completed);
+
+  const updateResult = await collection.where({
+    _id: id.trim(),
+    _openid: openid
+  }).update({
+    data: {
+      completed: nextCompleted
+    }
+  });
+
+  if (!updateResult.stats || updateResult.stats.updated === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  return success({
+    id: id.trim(),
+    completed: nextCompleted
+  }, nextCompleted ? '任务已完成' : '任务已恢复为未完成');
+}
+
 
 /**
  * 云函数统一入口。
@@ -291,6 +373,18 @@ exports.main = async (event) => {
 
       case 'detail':
         return await getTaskDetail(event.id, OPENID);
+
+      case 'update':
+        return await updateTask(event.id, event.data, OPENID);
+
+      case 'delete':
+        return await deleteTask(event.id, OPENID);
+
+      case 'toggleTop':
+        return await toggleTaskTop(event.id, OPENID);
+
+      case 'toggleComplete':
+        return await toggleTaskComplete(event.id, OPENID);
 
       default:
         return failure(400, '不支持的任务操作');
