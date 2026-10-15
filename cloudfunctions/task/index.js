@@ -7,7 +7,8 @@ const {
 } = require('./response');
 
 const {
-  validateCreateTask
+  validateCreateTask,
+  parsePagination
 } = require('./validation');
 
 cloud.init({
@@ -26,15 +27,13 @@ function toPublicTask(task) {
     name: task.name,
     type: task.type,
     level: task.level,
-    ddl: task.ddl ? task.ddl.toISOString() : null,
+    ddl: toISOString(task.ddl),
     content: task.content,
-    images: task.images,
-    top: task.top,
-    remindAt: task.remindAt
-      ? task.remindAt.toISOString()
-      : null,
-    reminded: task.reminded,
-    createTime: task.createTime.toISOString()
+    images: task.images || [],
+    top: Boolean(task.top),
+    remindAt: toISOString(task.remindAt),
+    reminded: Boolean(task.reminded),
+    createTime: toISOString(task.createTime)
   };
 }
 
@@ -120,3 +119,64 @@ exports.main = async (event) => {
     );
   }
 };
+
+/**
+ * 添加统一日期转换函数。
+ * 避免数据库返回值的类型差异导致转换异常；
+ * 支持任务列表和任务详情共用同一个转换函数。
+ */
+function toISOString(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toISOString();
+}
+
+/**
+ * 查询当前用户的任务列表。
+ */
+async function listTasks(input, openid) {
+  const pagination = parsePagination(input || {});
+
+  if (!pagination.valid) {
+    return failure(400, pagination.errors.join('；'));
+  }
+
+  const { page, pageSize, skip } = pagination.data;
+
+  // 用户身份来自云函数上下文，不来自前端参数。
+  const collection = db.collection('tasks');
+  const query = collection.where({
+    _openid: openid
+  });
+
+  // 获取当前用户的任务总数，用于前端分页显示。
+  const countResult = await query.count();
+
+  // 先按置顶、等级、截止时间、创建时间排序，再分页。
+  const result = await query
+    .orderBy('top', 'desc')
+    .orderBy('level', 'desc')
+    .orderBy('ddl', 'asc')
+    .orderBy('createTime', 'desc')
+    .skip(skip)
+    .limit(pageSize)
+    .get();
+
+  return success({
+    list: result.data.map(toPublicTask),
+    pagination: {
+      page,
+      pageSize,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / pageSize)
+    }
+  }, '查询任务列表成功');
+}
