@@ -238,6 +238,28 @@ async function updateTask(id, input, openid) {
   }, '任务修改成功');
 }
 
+/**
+ * 删除当前用户自己的任务。
+ */
+async function deleteTask(id, openid) {
+  if (typeof id !== 'string' || id.trim() === '') {
+    return failure(400, '任务 ID 不能为空');
+  }
+
+  const result = await db.collection('tasks').where({
+    _id: id.trim(),
+    _openid: openid
+  }).remove();
+
+  if (!result.stats || result.stats.removed === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  return success({
+    id: id.trim()
+  }, '任务删除成功');
+}
+
 
 /**
  * 云函数统一入口。
