@@ -83,44 +83,6 @@ async function createTask(input, openid) {
 }
 
 /**
- * 云函数统一入口。
- *
- * 当前支持：
- * action = create
- */
-exports.main = async (event) => {
-  try {
-    const { OPENID } = cloud.getWXContext();
-
-    if (!OPENID) {
-      return failure(
-        401,
-        '无法识别当前用户，请重新进入小程序'
-      );
-    }
-
-    if (!event || typeof event.action !== 'string') {
-      return failure(400, '缺少操作类型 action');
-    }
-
-    switch (event.action) {
-      case 'create':
-        return await createTask(event.data, OPENID);
-
-      default:
-        return failure(400, '不支持的任务操作');
-    }
-  } catch (error) {
-    console.error('task cloud function failed:', error);
-
-    return failure(
-      500,
-      '任务操作失败，请稍后重试'
-    );
-  }
-};
-
-/**
  * 添加统一日期转换函数。
  * 避免数据库返回值的类型差异导致转换异常；
  * 支持任务列表和任务详情共用同一个转换函数。
@@ -207,3 +169,48 @@ async function getTaskDetail(id, openid) {
     task: toPublicTask(result.data[0])
   }, '查询任务详情成功');
 }
+
+/**
+ * 云函数统一入口。
+ *
+ * 当前支持：
+ * action = create
+ */
+exports.main = async (event) => {
+  try {
+    const { OPENID } = cloud.getWXContext();
+
+    if (!OPENID) {
+      return failure(
+        401,
+        '无法识别当前用户，请重新进入小程序'
+      );
+    }
+
+    if (!event || typeof event.action !== 'string') {
+      return failure(400, '缺少操作类型 action');
+    }
+
+    switch (event.action) {
+      case 'create':
+        return await createTask(event.data, OPENID);
+
+      case 'list':
+        return await listTasks(event, OPENID);
+
+      case 'detail':
+        return await getTaskDetail(event.id, OPENID);
+
+      default:
+        return failure(400, '不支持的任务操作');
+    }
+    
+  } catch (error) {
+    console.error('task cloud function failed:', error);
+
+    return failure(
+      500,
+      '任务操作失败，请稍后重试'
+    );
+  }
+};
