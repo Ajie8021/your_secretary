@@ -150,9 +150,133 @@ function parsePagination(input = {}) {
   };
 }
 
+/**
+ * 校验修改任务的参数。
+ *
+ * 只校验用户实际提交的字段，不给缺失字段填默认值，
+ * 从而避免修改任务时覆盖原有数据。
+ */
+function validateUpdateTask(input) {
+  if (
+    !input ||
+    typeof input !== 'object' ||
+    Array.isArray(input)
+  ) {
+    return {
+      valid: false,
+      errors: ['修改参数必须是对象']
+    };
+  }
+
+  const data = {};
+  const errors = [];
+  const allowedFields = [
+    'name',
+    'type',
+    'level',
+    'ddl',
+    'content',
+    'images',
+    'remindAt'
+  ];
+
+  // 至少要提交一个允许修改的字段。
+  const fields = allowedFields.filter(
+    field => Object.prototype.hasOwnProperty.call(input, field)
+  );
+
+  if (fields.length === 0) {
+    return {
+      valid: false,
+      errors: ['至少需要提供一个可修改的字段']
+    };
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'name')) {
+    if (typeof input.name !== 'string') {
+      errors.push('任务名称必须是字符串');
+    } else {
+      data.name = input.name.trim() || '无名';
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'type')) {
+    if (typeof input.type !== 'string') {
+      errors.push('任务类型必须是字符串');
+    } else {
+      data.type = input.type.trim();
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'level')) {
+    if (
+      !Number.isInteger(input.level) ||
+      input.level < 1 ||
+      input.level > 4
+    ) {
+      errors.push('任务等级必须是 1 到 4 的整数');
+    } else {
+      data.level = input.level;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'ddl')) {
+    const result = parseDate(input.ddl, '截止时间');
+
+    if (result.error) {
+      errors.push(result.error);
+    } else {
+      data.ddl = result.value;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'remindAt')) {
+    const result = parseDate(input.remindAt, '提醒时间');
+
+    if (result.error) {
+      errors.push(result.error);
+    } else {
+      data.remindAt = result.value;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'content')) {
+    if (typeof input.content !== 'string') {
+      errors.push('任务描述必须是字符串');
+    } else {
+      data.content = input.content;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'images')) {
+    if (
+      !Array.isArray(input.images) ||
+      !input.images.every(item => typeof item === 'string')
+    ) {
+      errors.push('图片列表必须是字符串数组');
+    } else {
+      data.images = input.images;
+    }
+  }
+
+  if (errors.length > 0) {
+    return {
+      valid: false,
+      errors
+    };
+  }
+
+  return {
+    valid: true,
+    errors: [],
+    data
+  };
+}
+
 
 module.exports = {
   parseDate,
   validateCreateTask,
-  parsePagination
+  parsePagination,
+  validateUpdateTask
 };

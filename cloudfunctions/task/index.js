@@ -8,7 +8,8 @@ const {
 
 const {
   validateCreateTask,
-  parsePagination
+  parsePagination,
+  validateUpdateTask
 } = require('./validation');
 
 cloud.init({
@@ -171,6 +172,72 @@ async function getTaskDetail(id, openid) {
     task: toPublicTask(result.data[0])
   }, '查询任务详情成功');
 }
+
+/**
+ * 修改当前用户自己的任务。
+ */
+async function updateTask(id, input, openid) {
+  if (typeof id !== 'string' || id.trim() === '') {
+    return failure(400, '任务 ID 不能为空');
+  }
+
+  const validation = validateUpdateTask(input);
+
+  if (!validation.valid) {
+    return failure(400, validation.errors.join('；'));
+  }
+
+  const taskId = id.trim();
+  const collection = db.collection('tasks');
+
+  // 先验证任务存在且属于当前用户。
+  const result = await collection.where({
+    _id: taskId,
+    _openid: openid
+  }).limit(1).get();
+
+  if (result.data.length === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  const currentTask = result.data[0];
+  const changes = validation.data;
+
+  // 只有提醒时间配置实际发生变化时，才重置提醒发送状态。
+  const dateChanged = (oldValue, newValue) => {
+    const oldTime = oldValue ? new Date(oldValue).getTime() : null;
+    const newTime = newValue ? new Date(newValue).getTime() : null;
+    return oldTime !== newTime;
+  };
+
+  const reminderConfigChanged =
+    (Object.prototype.hasOwnProperty.call(changes, 'ddl') &&
+      dateChanged(currentTask.ddl, changes.ddl)) ||
+    (Object.prototype.hasOwnProperty.call(changes, 'remindAt') &&
+      dateChanged(currentTask.remindAt, changes.remindAt));
+
+  if (reminderConfigChanged) {
+    changes.reminded = false;
+  }
+
+  // 再次把 ID 和用户身份放入更新条件，避免更新其他用户的任务。
+  const updateResult = await collection.where({
+    _id: taskId,
+    _openid: openid
+  }).update({
+    data: changes
+  });
+
+  if (!updateResult.stats || updateResult.stats.updated === 0) {
+    return failure(404, '任务不存在或无权访问');
+  }
+
+  return success({
+    id: taskId,
+    updatedFields: Object.keys(validation.data)
+  }, '任务修改成功');
+}
+
 
 /**
  * 云函数统一入口。
