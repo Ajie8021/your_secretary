@@ -56,4 +56,20 @@
     测试任务详情查询
   </button> -->
 
+  <!-- <button bindtap="testUpdateTask">
+    测试任务修改查询
+  </button> -->
+
+  <!-- <button bindtap="testTopTask">
+    测试任务置顶逻辑
+  </button> -->
+
+  <!-- <button bindtap="testCompleteTask">
+    测试任务完成状态切换
+  </button> -->
+
+  <button bindtap="testDeleteTask">
+    测试任务删除逻辑
+  </button>
+
 </view>

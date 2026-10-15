@@ -138,7 +138,7 @@ Page({
   // }
 
   //  /**
-  //  * 调用testDetailTask云函数进行任务列表测试。
+  //  * 调用testDetailTask云函数进行任务详情测试。
   //  */
   // async testDetailTask() {
   //   const result = await wx.cloud.callFunction({
@@ -151,4 +151,69 @@ Page({
     
   //   console.log('任务详情：', result.result);
   // }
+
+  //  /**
+  //  * 调用testUpdateTask云函数进行任务修改测试。
+  //  */
+  // async testUpdateTask() {
+  //   const result = await wx.cloud.callFunction({
+  //     name: 'task',
+  //     data: {
+  //       action: 'update',
+  //       id: '1a3ef1dd6ad03daa021bcfe93ca9ed49',
+  //       data: {
+  //         name: '修改测试',
+  //         level: 3
+  //       }
+  //     }
+  //   });
+    
+  //   console.log('修改结果：', result.result);
+  // }
+
+  // /**
+  //  * 调用testTopTask云函数进行任务置顶测试。
+  //  */
+  // async testTopTask() {
+  //   const result = await wx.cloud.callFunction({
+  //     name: 'task',
+  //     data: {
+  //       action: 'toggleTop',
+  //       id: '1a3ef1dd6ad03daa021bcfe93ca9ed49'
+  //     }
+  //   });
+    
+  //   console.log('置顶结果：', result.result);
+  // }
+
+  // /**
+  //  * 调用testCompleteTask云函数进行任务完成状态切换测试。
+  //  */
+  // async testCompleteTask() {
+  //   const result = await wx.cloud.callFunction({
+  //     name: 'task',
+  //     data: {
+  //       action: 'toggleComplete',
+  //       id: '1a3ef1dd6ad03daa021bcfe93ca9ed49'
+  //     }
+  //   });
+    
+  //   console.log('完成状态：', result.result);
+  // }
+
+  /**
+   * 调用testDeleteTask云函数进行任务删除测试。
+   */
+  async testDeleteTask() {
+    const result = await wx.cloud.callFunction({
+      name: 'task',
+      data: {
+        action: 'delete',
+        id: '1a3ef1dd6ad03daa021bcfe93ca9ed49'
+      }
+    });
+    
+    console.log('删除结果：', result.result);
+  }
+
 });
