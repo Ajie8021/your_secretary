@@ -1,0 +1,77 @@
+<view class="page">
+  <view class="header">
+    <view>
+      <view class="title">我的任务</view>
+      <view class="subtitle">共 {{total}} 项任务</view>
+    </view>
+
+    <button class="add-button" bindtap="createTask">
+      + 新建
+    </button>
+  </view>
+
+  <view wx:if="{{tasks.length === 0 && !loading}}" class="empty">
+    暂无任务，点击右上角新建任务。
+  </view>
+
+  <view
+    wx:for="{{tasks}}"
+    wx:key="id"
+    class="task-card"
+  >
+    <view class="task-main">
+      <view class="task-title-row">
+        <text wx:if="{{item.top}}" class="tag top-tag">置顶</text>
+        <text wx:if="{{item.completed}}" class="tag done-tag">已完成</text>
+        <text class="task-title {{item.completed ? 'completed' : ''}}">
+          {{item.name}}
+        </text>
+      </view>
+
+      <view class="task-meta">
+        <text>等级：{{item.level}}</text>
+        <text wx:if="{{item.type}}">类型：{{item.type}}</text>
+      </view>
+
+      <view class="task-ddl">
+        截止时间：{{item.ddl || '未设置'}}
+      </view>
+
+      <view wx:if="{{item.content}}" class="task-content">
+        {{item.content}}
+      </view>
+    </view>
+
+    <view class="task-actions">
+      <button
+        size="mini"
+        data-id="{{item.id}}"
+        bindtap="showTaskDetail"
+      >
+        详情
+      </button>
+
+      <button
+        size="mini"
+        data-id="{{item.id}}"
+        bindtap="showActions"
+      >
+        管理
+      </button>
+    </view>
+  </view>
+
+  <button
+    wx:if="{{hasMore}}"
+    class="more-button"
+    loading="{{loading}}"
+    disabled="{{loading}}"
+    bindtap="loadMore"
+  >
+    加载更多
+  </button>
+
+  <view wx:if="{{!hasMore && tasks.length > 0}}" class="end-tip">
+    已显示全部任务
+  </view>
+</view>

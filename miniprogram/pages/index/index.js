@@ -201,19 +201,19 @@ Page({
   //   console.log('完成状态：', result.result);
   // }
 
-  /**
-   * 调用testDeleteTask云函数进行任务删除测试。
-   */
-  async testDeleteTask() {
-    const result = await wx.cloud.callFunction({
-      name: 'task',
-      data: {
-        action: 'delete',
-        id: '1a3ef1dd6ad03daa021bcfe93ca9ed49'
-      }
-    });
+  // /**
+  //  * 调用testDeleteTask云函数进行任务删除测试。
+  //  */
+  // async testDeleteTask() {
+  //   const result = await wx.cloud.callFunction({
+  //     name: 'task',
+  //     data: {
+  //       action: 'delete',
+  //       id: '1a3ef1dd6ad03daa021bcfe93ca9ed49'
+  //     }
+  //   });
     
-    console.log('删除结果：', result.result);
-  }
+  //   console.log('删除结果：', result.result);
+  // }
 
 });

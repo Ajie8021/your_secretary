@@ -68,8 +68,8 @@
     测试任务完成状态切换
   </button> -->
 
-  <button bindtap="testDeleteTask">
+  <!-- <button bindtap="testDeleteTask">
     测试任务删除逻辑
-  </button>
+  </button> -->
 
 </view>
