@@ -1,0 +1,117 @@
+<view class="form-page">
+  <view class="form-card">
+    <view class="field">
+      <view class="label">任务名称 *</view>
+      <input
+        class="input"
+        placeholder="请输入任务名称"
+        value="{{name}}"
+        maxlength="100"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <view class="field">
+      <view class="label">任务类型</view>
+      <input
+        class="input"
+        placeholder="例如：学习、生活、工作"
+        value="{{type}}"
+        bindinput="onTypeInput"
+      />
+    </view>
+
+    <view class="field">
+      <view class="label">重要程度</view>
+      <radio-group bindchange="onLevelChange">
+        <label class="radio-item">
+          <radio value="1" checked="{{level === 1}}" />
+          <text>一般</text>
+        </label>
+        <label class="radio-item">
+          <radio value="2" checked="{{level === 2}}" />
+          <text>紧急</text>
+        </label>
+        <label class="radio-item">
+          <radio value="3" checked="{{level === 3}}" />
+          <text>重要</text>
+        </label>
+        <label class="radio-item">
+          <radio value="4" checked="{{level === 4}}" />
+          <text>重要且紧急</text>
+        </label>
+      </radio-group>
+    </view>
+
+    <view class="field">
+      <view class="label">截止日期</view>
+      <view class="picker-row">
+        <picker
+          mode="date"
+          value="{{ddlDate}}"
+          bindchange="onDdlDateChange"
+        >
+          <view class="picker-value">
+            {{ddlDate || '请选择截止日期'}}
+          </view>
+        </picker>
+
+        <picker
+          mode="time"
+          value="{{ddlTime}}"
+          bindchange="onDdlTimeChange"
+        >
+          <view class="picker-value">{{ddlTime}}</view>
+        </picker>
+
+        <text class="clear-text" bindtap="clearDdl">清除</text>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="label">提醒时间</view>
+      <view class="picker-row">
+        <picker
+          mode="date"
+          value="{{remindDate}}"
+          bindchange="onRemindDateChange"
+        >
+          <view class="picker-value">
+            {{remindDate || '请选择提醒日期'}}
+          </view>
+        </picker>
+
+        <picker
+          mode="time"
+          value="{{remindTime}}"
+          bindchange="onRemindTimeChange"
+        >
+          <view class="picker-value">{{remindTime}}</view>
+        </picker>
+
+        <text class="clear-text" bindtap="clearReminder">清除</text>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="label">任务描述</view>
+      <textarea
+        class="textarea"
+        placeholder="填写任务详情"
+        value="{{content}}"
+        maxlength="3000"
+        auto-height
+        bindinput="onContentInput"
+      />
+    </view>
+  </view>
+
+  <button
+    class="submit-button"
+    loading="{{saving}}"
+    disabled="{{saving}}"
+    bindtap="submitTask"
+  >
+    {{isEdit ? '保存修改' : '创建任务'}}
+  </button>
+</view>

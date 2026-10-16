@@ -1,7 +1,8 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/tasks/index",
-    "pages/index/index"
+    "pages/task-form/index"
   ],
   "window": {
     "navigationBarTitleText": "备忘秘书",

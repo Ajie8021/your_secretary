@@ -72,4 +72,8 @@
     测试任务删除逻辑
   </button> -->
 
+  <button bindtap="goToTasks">
+  进入我的任务
+  </button>
+
 </view>

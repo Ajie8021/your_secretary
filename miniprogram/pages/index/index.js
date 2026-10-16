@@ -216,4 +216,9 @@ Page({
   //   console.log('删除结果：', result.result);
   // }
 
+  goToTasks() {
+    wx.navigateTo({
+      url: '/pages/tasks/index'
+    });
+  }
 });
