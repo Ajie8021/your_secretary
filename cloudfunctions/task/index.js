@@ -9,7 +9,8 @@ const {
 const {
   validateCreateTask,
   parsePagination,
-  validateUpdateTask
+  validateUpdateTask,
+  hasReminderConfigChanged
 } = require('./validation');
 
 cloud.init({
@@ -204,18 +205,11 @@ async function updateTask(id, input, openid) {
   const changes = validation.data;
 
   // 只有提醒时间配置实际发生变化时，才重置提醒发送状态。
-  const dateChanged = (oldValue, newValue) => {
-    const oldTime = oldValue ? new Date(oldValue).getTime() : null;
-    const newTime = newValue ? new Date(newValue).getTime() : null;
-    return oldTime !== newTime;
-  };
-
-  const reminderConfigChanged =
-    (Object.prototype.hasOwnProperty.call(changes, 'ddl') &&
-      dateChanged(currentTask.ddl, changes.ddl)) ||
-    (Object.prototype.hasOwnProperty.call(changes, 'remindAt') &&
-      dateChanged(currentTask.remindAt, changes.remindAt));
-
+  const reminderConfigChanged = hasReminderConfigChanged(
+    currentTask,
+    changes
+  );
+  
   if (reminderConfigChanged) {
     changes.reminded = false;
   }
