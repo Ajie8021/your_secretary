@@ -1,7 +1,7 @@
 <view class="form-page">
   <view class="form-card">
     <view class="field">
-      <view class="label">任务名称 *</view>
+      <view class="label">任务名称</view>
       <input
         class="input"
         placeholder="请输入任务名称"

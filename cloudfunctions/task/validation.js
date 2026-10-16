@@ -22,6 +22,24 @@ function parseDate(value, fieldName) {
   return { value: date, error: null };
 }
 
+/**
+ * 校验提醒时间是否晚于截止时间。
+ *
+ * 两个时间都存在时，提醒时间不得晚于截止时间。
+ * 任意一个时间为 null，表示未设置，不进行比较。
+ */
+function validateReminderBeforeDdl(ddl, remindAt) {
+  if (ddl === null || remindAt === null) {
+    return null;
+  }
+
+  if (remindAt.getTime() > ddl.getTime()) {
+    return '提醒时间不能晚于截止时间';
+  }
+
+  return null;
+}
+
 function validateCreateTask(input) {
   const errors = [];
 
@@ -88,6 +106,19 @@ function validateCreateTask(input) {
 
   if (ddlResult.error) errors.push(ddlResult.error);
   if (remindResult.error) errors.push(remindResult.error);
+
+  // 校验提醒时间不能晚于截止时间。
+  // 只有两个日期都解析成功时，才进行比较。
+  if (!ddlResult.error && !remindResult.error) {
+    const reminderError = validateReminderBeforeDdl(
+      ddlResult.value,
+      remindResult.value
+    );
+
+    if (reminderError) {
+      errors.push(reminderError);
+    }
+  }
 
   if (errors.length > 0) {
     return { valid: false, errors };

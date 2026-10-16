@@ -97,7 +97,7 @@ Page({
       const task = result.task;
 
       this.setData({
-        name: task.name || '无名',
+        name: task.name || '',
         type: task.type || '',
         level: task.level || 1,
         content: task.content || '',
@@ -161,15 +161,8 @@ Page({
   async submitTask() {
     if (this.data.saving) return;
 
-    const name = this.data.name.trim();
-
-    if (!name) {
-      wx.showToast({
-        title: '请输入任务名称',
-        icon: 'none'
-      });
-      return;
-    }
+    // 任务名称允许为空；为空时使用默认名称
+    const name = (this.data.name || '').trim() || '无名';
 
     this.setData({ saving: true });
 
@@ -183,6 +176,21 @@ Page({
         this.data.remindDate,
         this.data.remindTime
       );
+
+      // 校验：提醒时间不能晚于截止时间。
+      // 只有两个时间都设置时，才进行比较。
+      if (ddl && remindAt) {
+        const ddlTimestamp = new Date(ddl).getTime();
+        const remindTimestamp = new Date(remindAt).getTime();
+
+        if (remindTimestamp > ddlTimestamp) {
+          wx.showToast({
+            title: '提醒时间不能晚于截止时间',
+            icon: 'none'
+          });
+          return;
+        }
+      }
 
       const taskData = {
         name,
