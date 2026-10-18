@@ -9,9 +9,10 @@ const {
 const {
   validateCreateTask,
   parsePagination,
-  validateUpdateTask,
-  hasReminderConfigChanged
+  validateUpdateTask
 } = require('./validation');
+
+const { hasReminderConfigChanged } = require('./task-rules');
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
