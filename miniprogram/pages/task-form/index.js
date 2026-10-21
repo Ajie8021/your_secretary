@@ -1,4 +1,7 @@
 const taskApi = require('../../utils/task-api');
+const {
+  requestTaskReminderSubscription
+} = require('../../utils/subscribe-message');
 
 function pad2(value) {
   return String(value).padStart(2, '0');
@@ -200,6 +203,22 @@ Page({
         ddl,
         remindAt
       };
+
+      // 只有设置了提醒时间，才申请订阅消息授权。
+      if (remindAt) {
+        const result = await requestTaskReminderSubscription({
+          requestSubscribeMessage: options =>
+            wx.requestSubscribeMessage(options)
+        });
+
+        if (result.status === 'accepted') {
+          console.log('用户已同意订阅任务提醒');
+        } else {
+          // 用户拒绝、授权接口失败或当前环境不支持时，
+          // 都不阻止任务保存。
+          console.log('未获得订阅授权：', result.message);
+        }
+      }
 
       if (this.data.isEdit) {
         await taskApi.updateTask(this.data.id, taskData);
