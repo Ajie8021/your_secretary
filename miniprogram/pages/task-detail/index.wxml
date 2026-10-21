@@ -1,0 +1,178 @@
+
+<view class="page">
+  <!-- 顶部导航 -->
+  <view class="page-header">
+    <view class="back-button" bindtap="goBack">
+      <text class="back-arrow">‹</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="page-title">任务详情</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="state-container">
+    <view class="loading-dot"></view>
+    <text class="state-text">正在整理任务信息...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:elif="{{errorMessage}}" class="state-container">
+    <view class="error-icon">!</view>
+    <text class="error-title">暂时无法查看</text>
+    <text class="error-text">{{errorMessage}}</text>
+    <button class="retry-button" bindtap="goBack">
+      返回任务列表
+    </button>
+  </view>
+
+  <block wx:elif="{{task}}">
+    <!-- 任务主卡片 -->
+    <view class="hero-card">
+      <view class="hero-decoration hero-decoration-one"></view>
+      <view class="hero-decoration hero-decoration-two"></view>
+
+      <view class="hero-top">
+        <view class="hero-label">
+          <view class="hero-label-dot"></view>
+          <text>MY TASK</text>
+        </view>
+
+        <view wx:if="{{task.top}}" class="top-badge">
+          <text class="top-badge-star">★</text>
+          <text>置顶任务</text>
+        </view>
+      </view>
+
+      <view class="hero-title">
+        {{task.name || '未命名任务'}}
+      </view>
+
+      <view class="hero-description">
+        一件一件完成，让每个计划都有回音。
+      </view>
+
+      <view class="hero-line"></view>
+
+      <view class="hero-bottom">
+        <view class="status-pill {{task.completed ? 'status-completed' : 'status-pending'}}">
+          <view class="status-dot"></view>
+          <text>{{task.completed ? '已完成' : '进行中'}}</text>
+        </view>
+
+        <view class="hero-priority">
+          <text class="priority-label">优先级</text>
+          <text class="priority-value">{{task.displayLevel}}</text>
+        </view>
+      </view>
+
+      <view class="hero-watermark">✓</view>
+    </view>
+
+    <!-- 任务分类标签 -->
+    <view class="category-row">
+      <view class="category-icon">
+        <text>✦</text>
+      </view>
+      <view class="category-info">
+        <text class="category-caption">任务分类</text>
+        <text class="category-name">{{task.displayType}}</text>
+      </view>
+      <view class="category-arrow">›</view>
+    </view>
+
+    <!-- 时间安排 -->
+    <view class="section-card">
+      <view class="section-heading">
+        <view class="section-icon time-section-icon">
+          <text>◷</text>
+        </view>
+        <view class="section-heading-text">
+          <text class="section-title">时间安排</text>
+          <text class="section-subtitle">把握节奏，不错过每个重要时刻</text>
+        </view>
+      </view>
+
+      <view class="timeline">
+        <!-- 截止时间 -->
+        <view class="timeline-item">
+          <view class="timeline-rail">
+            <view class="timeline-node deadline-node">
+              <text>!</text>
+            </view>
+            <view class="timeline-line"></view>
+          </view>
+
+          <view class="timeline-content">
+            <text class="timeline-label">任务截止</text>
+            <text class="timeline-date">{{task.displayDdl}}</text>
+            <text class="timeline-note">完成任务的最后期限</text>
+          </view>
+        </view>
+
+        <!-- 提醒时间 -->
+        <view class="timeline-item">
+          <view class="timeline-rail">
+            <view class="timeline-node reminder-node">
+              <text>♧</text>
+            </view>
+            <view wx:if="{{task.createTime}}" class="timeline-line"></view>
+          </view>
+
+          <view class="timeline-content">
+            <text class="timeline-label">提醒时间</text>
+            <text class="timeline-date">{{task.displayRemindAt}}</text>
+            <text class="timeline-note">为重要任务留一份提醒</text>
+          </view>
+        </view>
+
+        <!-- 创建时间 -->
+        <view wx:if="{{task.createTime}}" class="timeline-item timeline-last">
+          <view class="timeline-rail">
+            <view class="timeline-node created-node">
+              <text>✓</text>
+            </view>
+          </view>
+
+          <view class="timeline-content">
+            <text class="timeline-label">创建时间</text>
+            <text class="timeline-date">{{task.displayCreateTime}}</text>
+            <text class="timeline-note">从记录这一刻开始</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 任务内容 -->
+    <view class="section-card description-card">
+      <view class="section-heading">
+        <view class="section-icon content-section-icon">
+          <text>≡</text>
+        </view>
+        <view class="section-heading-text">
+          <text class="section-title">任务内容</text>
+          <text class="section-subtitle">记录计划，也记录每一个细节</text>
+        </view>
+      </view>
+
+      <view class="description-paper">
+        <view class="description-accent"></view>
+        <text class="description-text">{{task.displayContent}}</text>
+      </view>
+
+      <view class="description-footer">
+        <text class="description-footer-icon">✧</text>
+        <text>认真对待每一件小事</text>
+      </view>
+    </view>
+
+    <!-- 编辑按钮 -->
+    <view class="bottom-area">
+      <button class="edit-button" bindtap="editTask">
+        <text class="edit-button-icon">✎</text>
+        <text>编辑任务</text>
+      </button>
+      <text class="bottom-tip">让计划清晰，让生活有序</text>
+    </view>
+  </block>
+</view>

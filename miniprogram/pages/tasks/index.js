@@ -64,31 +64,21 @@ Page({
     });
   },
 
-  async showTaskDetail(event) {
+  // 跳转到独立的任务详情页。
+  showTaskDetail(event) {
     const id = event.currentTarget.dataset.id;
 
-    try {
-      const result = await taskApi.getTaskDetail(id);
-      const task = result.task;
-
-      wx.showModal({
-        title: task.name,
-        content: [
-          `类型：${task.type || '未设置'}`,
-          `等级：${task.level}`,
-          `截止时间：${task.ddl || '未设置'}`,
-          `状态：${task.completed ? '已完成' : '未完成'}`,
-          '',
-          task.content || '暂无描述'
-        ].join('\n'),
-        showCancel: false
-      });
-    } catch (error) {
+    if (!id) {
       wx.showToast({
-        title: error.message || '获取任务详情失败',
+        title: '任务编号缺失',
         icon: 'none'
       });
+      return;
     }
+
+    wx.navigateTo({
+      url: `/pages/task-detail/index?id=${encodeURIComponent(id)}`
+    });
   },
 
   showActions(event) {
