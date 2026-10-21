@@ -13,6 +13,16 @@ const {
   buildDueTaskQuery
 } = require('./reminder-query');
 
+const {
+  sendSubscriptionMessage
+} = require('./subscription-message');
+
+const {
+  TEMPLATE_ID,
+  TEMPLATE_FIELD_MAP,
+  MESSAGE_PAGE
+} = require('./reminder-config');
+
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
@@ -43,15 +53,41 @@ async function findDueTasks(now) {
 }
 
 /**
- * 当前阶段尚未接入微信订阅消息。
- * 显式失败，避免把未发送的消息当作成功。
+ * 向任务所属用户发送微信订阅消息。
  *
- * 下一步会将其替换为真实的订阅消息发送实现。
+ * 注意：
+ * 1. 接收人取自数据库任务记录的 _openid；
+ * 2. 模板 ID 和字段必须事先配置正确；
+ * 3. 只有微信接口调用成功后，处理流程才会继续更新 reminded。
  */
-async function sendReminder() {
-  const error = new Error('订阅消息发送接口尚未配置');
-  error.stage = 'send';
-  throw error;
+async function sendReminder(task) {
+  if (!task || !task._openid) {
+    const error = new Error('任务缺少 _openid，无法确定接收用户');
+    error.stage = 'send';
+    throw error;
+  }
+
+  if (!TEMPLATE_ID) {
+    const error = new Error('尚未配置 REMINDER_TEMPLATE_ID');
+    error.stage = 'send';
+    throw error;
+  }
+
+  if (!Object.keys(TEMPLATE_FIELD_MAP).length) {
+    const error = new Error('尚未配置订阅消息模板字段');
+    error.stage = 'send';
+    throw error;
+  }
+
+  return sendSubscriptionMessage({
+    // 使用微信云开发提供的订阅消息发送接口。
+    sendApi: payload => cloud.openapi.subscribeMessage.send(payload),
+    openid: task._openid,
+    templateId: TEMPLATE_ID,
+    task,
+    fieldMap: TEMPLATE_FIELD_MAP,
+    page: MESSAGE_PAGE
+  });
 }
 
 /**
