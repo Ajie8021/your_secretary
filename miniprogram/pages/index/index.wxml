@@ -76,4 +76,8 @@
   进入我的任务
   </button>
 
+  <!-- <button bindtap="testReminderFromMiniProgram">
+    测试提醒云函数
+  </button> -->
+
 </view>

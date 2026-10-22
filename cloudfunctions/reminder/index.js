@@ -53,6 +53,23 @@ async function findDueTasks(now) {
 }
 
 /**
+ * 根据任务 ID 查询单条任务。
+ *
+ * 仅用于定向联调，避免手动测试时扫描所有到期任务。
+ */
+async function findTaskById(taskId) {
+  if (typeof taskId !== 'string' || !taskId.trim()) {
+    throw new TypeError('测试任务 ID 不能为空');
+  }
+
+  const response = await db.collection('tasks')
+    .doc(taskId)
+    .get();
+
+  return response.data;
+}
+
+/**
  * 向任务所属用户发送微信订阅消息。
  *
  * 注意：
@@ -115,7 +132,7 @@ async function markReminded(task) {
  * 云函数入口。
  * 由定时触发器调用，不需要小程序页面传入任务数据。
  */
-exports.main = async () => {
+exports.main = async (event = {}) => {
   const now = new Date();
 
   console.log('[sendReminder] 扫描开始', {
@@ -123,12 +140,25 @@ exports.main = async () => {
   });
 
   try {
-    const tasks = await findDueTasks(now);
+    let tasks;
+
+    // 传入 testTaskId 时，只查询指定任务，用于真实消息联调。
+    // 没有传入时，执行原有的到期任务扫描逻辑。
+    if (event && event.testTaskId) {
+      const task = await findTaskById(event.testTaskId);
+      tasks = [task];
+
+      console.log('[sendReminder] 定向测试模式', {
+        taskId: event.testTaskId
+      });
+    } else {
+      tasks = await findDueTasks(now);
+    }
 
     const result = await processDueReminders({
       tasks,
       now,
-      limit: QUERY_LIMIT,
+      limit: event && event.testTaskId ? 1 : QUERY_LIMIT,
       sendReminder,
       markReminded
     });
@@ -156,3 +186,4 @@ exports.main = async () => {
 
 module.exports.findDueTasks = findDueTasks;
 module.exports.markReminded = markReminded;
+module.exports.findTaskById = findTaskById;

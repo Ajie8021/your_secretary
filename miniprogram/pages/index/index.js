@@ -216,6 +216,22 @@ Page({
   //   console.log('删除结果：', result.result);
   // }
 
+  // // 临时测试：从小程序客户端调用提醒云函数。
+  // async testReminderFromMiniProgram() {
+  //   try {
+  //     const result = await wx.cloud.callFunction({
+  //       name: 'reminder',
+  //       data: {
+  //         testTaskId: '959c20156ad8d41e04f759584c260bf9'
+  //       }
+  //     });
+
+  //     console.log('[提醒测试] 云函数返回：', result.result);
+  //   } catch (error) {
+  //     console.error('[提醒测试] 调用失败：', error);
+  //   }
+  // },
+
   goToTasks() {
     wx.navigateTo({
       url: '/pages/tasks/index'

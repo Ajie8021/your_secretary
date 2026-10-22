@@ -20,6 +20,8 @@ test('查询条件应筛选未提醒且提醒时间不晚于当前时间的任�
     reminded: false,
     remindAt: { $lte: now }
   });
+
+  assert.ok(query.remindAt.$lte instanceof Date);
 });
 
 test('缺少数据库 command 对象时应报错', () => {
