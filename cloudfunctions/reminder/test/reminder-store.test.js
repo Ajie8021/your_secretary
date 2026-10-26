@@ -168,3 +168,29 @@ test('无效的任务 ID 应抛出参数错误', async () => {
     /taskId 必须是非空字符串/
   );
 });
+
+test('达到最大尝试次数后不能再次领取任务', async () => {
+  const {
+    MAX_REMINDER_ATTEMPTS,
+    claimReminderTask
+  } = require('../reminder-store');
+
+  const { db, state } = createMockDb(
+    createTask({
+      reminderStatus: 'failed',
+      reminderAttempts: MAX_REMINDER_ATTEMPTS,
+      reminderNextRetryAt: null
+    })
+  );
+
+  const result = await claimReminderTask(
+    db,
+    'task-001',
+    NOW
+  );
+
+  assert.equal(result, null);
+
+  // 达到重试上限后，不应再次更新任务。
+  assert.equal(state.updates.length, 0);
+});

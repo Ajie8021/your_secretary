@@ -23,6 +23,12 @@ const {
   MESSAGE_PAGE
 } = require('./reminder-config');
 
+const {
+  claimReminderTask,
+  MAX_REMINDER_ATTEMPTS,
+  RETRY_DELAY_MS
+} = require('./reminder-store');
+
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
@@ -108,10 +114,10 @@ async function sendReminder(task) {
 }
 
 /**
- * 发送成功后更新任务的提醒状态。
+ * 发送成功后，将任务标记为已提醒。
  *
- * 目前只在消息发送成功后调用。
- *
+ * 只有数据库更新成功后，才算本地状态完成。
+ * 
  * @param {Object} task 任务记录
  */
 async function markReminded(task) {
@@ -123,7 +129,50 @@ async function markReminded(task) {
     .doc(task._id)
     .update({
       data: {
-        reminded: true
+        reminded: true,
+        reminderStatus: 'sent',
+        reminderLockUntil: null,
+        reminderNextRetryAt: null,
+        reminderLastError: null,
+        reminderUpdatedAt: new Date().toISOString()
+      }
+    });
+}
+
+/**
+ * 发送失败后记录错误，并计算下次重试时间。
+ *
+ * 达到最大尝试次数后，不再安排自动重试。
+ */
+async function markFailed(task, error) {
+  if (!task || !task._id) {
+    throw new Error('任务缺少 _id，无法记录提醒失败');
+  }
+
+  const attempts = Number.isInteger(task.reminderAttempts)
+    ? task.reminderAttempts
+    : 1;
+
+  const exhausted = attempts >= MAX_REMINDER_ATTEMPTS;
+  const nextRetryAt = exhausted
+    ? null
+    : new Date(Date.now() + RETRY_DELAY_MS).toISOString();
+
+  // 只保留简短错误信息，避免把过长的异常写入数据库。
+  const errorMessage = String(
+    error && error.message ? error.message : error
+  ).slice(0, 500);
+
+  await db.collection('tasks')
+    .doc(task._id)
+    .update({
+      data: {
+        reminded: false,
+        reminderStatus: 'failed',
+        reminderLockUntil: null,
+        reminderNextRetryAt: nextRetryAt,
+        reminderLastError: errorMessage,
+        reminderUpdatedAt: new Date().toISOString()
       }
     });
 }
@@ -146,8 +195,10 @@ exports.main = async (event = {}) => {
     // 没有传入时，执行原有的到期任务扫描逻辑。
     if (event && event.testTaskId) {
       const task = await findTaskById(event.testTaskId);
-      tasks = [task];
-
+    
+      // 文档不存在时返回空候选列表，避免将 undefined 放入任务数组。
+      tasks = task ? [task] : [];
+    
       console.log('[sendReminder] 定向测试模式', {
         taskId: event.testTaskId
       });
@@ -159,8 +210,15 @@ exports.main = async (event = {}) => {
       tasks,
       now,
       limit: event && event.testTaskId ? 1 : QUERY_LIMIT,
+    
+      // 发送前必须先通过事务领取任务。
+      claimReminder: task => claimReminderTask(db, task._id, now),
+      // 发送微信订阅消息。
       sendReminder,
-      markReminded
+      // 发送成功后持久化成功状态。
+      markReminded,
+      // 发送失败后记录错误，并安排有限重试。
+      markFailed
     });
 
     console.log('[sendReminder] 扫描结束', result);
@@ -187,3 +245,4 @@ exports.main = async (event = {}) => {
 module.exports.findDueTasks = findDueTasks;
 module.exports.markReminded = markReminded;
 module.exports.findTaskById = findTaskById;
+module.exports.markFailed = markFailed;
