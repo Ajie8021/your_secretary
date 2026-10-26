@@ -40,16 +40,36 @@ const QUERY_LIMIT = 100;
  * @returns {Promise<Array>} 候选任务列表
  */
 async function findDueTasks(now) {
-  const query = buildDueTaskQuery(_, now);
-
-  const response = await db.collection('tasks')
-    .where(query)
+  const result = await db
+    .collection('tasks')
+    .where(buildDueTaskQuery(_, now))
     .orderBy('remindAt', 'asc')
     .limit(QUERY_LIMIT)
     .get();
 
-  // 查询结果仍须经过提醒规则过滤。
-  return response.data.filter(task => isReminderDue(task, now));
+    const candidates = result.data || [];
+
+    const dueTasks = [];
+    
+    for (const task of candidates) {
+      const due = isReminderDue(task, now);
+    
+      console.info('[reminder-debug] 任务筛选', {
+        taskId: task._id,
+        scanTime: now.toISOString(),
+        remindAt: task.remindAt ?? null,
+        ddl: task.ddl ?? null,
+        completed: task.completed ?? false,
+        reminded: task.reminded ?? false,
+        due
+      });
+    
+      if (due) {
+        dueTasks.push(task);
+      }
+    }
+    
+    return dueTasks;
 }
 
 /**

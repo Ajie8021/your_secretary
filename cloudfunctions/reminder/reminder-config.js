@@ -17,7 +17,22 @@ const TEMPLATE_FIELD_MAP = {
   thing1: task => task.name,
 
   // 事项描述：{{thing4.DATA}}
-  thing4: task => task.content,
+  thing4: task => {
+    const content = String(task.content || '').trim();
+  
+    // 描述为空时使用默认文本，避免发送空值。
+    if (!content) {
+      return '暂无任务描述';
+    }
+  
+    // TODO：将 20 替换为微信模板中 thing4 字段实际允许的最大长度。
+    const MAX_LENGTH = 10;
+  
+    // 超出长度时截断，未超出时保持原样。
+    return content.length > MAX_LENGTH
+      ? content.slice(0, MAX_LENGTH)
+      : content;
+  },
 
   // 截止时间：{{time10.DATA}}
   time10: task => {

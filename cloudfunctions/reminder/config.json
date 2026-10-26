@@ -4,5 +4,12 @@
     "openapi": [
       "subscribeMessage.send"
     ]
-  }
+  },
+  "triggers": [
+    {
+      "name": "sendReminderEveryMinute",
+      "type": "timer",
+      "config": "0 */1 * * * * *"
+    }
+  ]
 }

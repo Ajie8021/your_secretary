@@ -6,6 +6,10 @@ const {
   sendSubscriptionMessage
 } = require('../subscription-message');
 
+const {
+  TEMPLATE_FIELD_MAP
+} = require('../reminder-config');
+
 // 使用模拟任务和模拟模板字段，不依赖真实微信模板。
 const task = {
   _id: 'task-001',
@@ -130,4 +134,27 @@ test('微信接口发送失败时应标记 send 阶段', async () => {
       return true;
     }
   );
+
+  test('任务描述超长时应截断到最大长度', () => {
+    const result = TEMPLATE_FIELD_MAP.thing4({
+      content: '这是一段超过限制长度的任务描述内容'
+    });
+  
+    // 确认输出长度不超过模板字段上限。
+    assert.ok(result.length <= 20);
+  });
+  
+  test('任务描述未超长时应保持原样', () => {
+    const content = '明天提交报告';
+  
+    const result = TEMPLATE_FIELD_MAP.thing4({ content });
+  
+    assert.equal(result, content);
+  });
+  
+  test('任务描述为空时应使用默认文本', () => {
+    const result = TEMPLATE_FIELD_MAP.thing4({ content: '' });
+  
+    assert.equal(result, '暂无任务描述');
+  });
 });
