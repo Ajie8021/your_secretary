@@ -19,7 +19,7 @@
     </view>
 
     <view class="field">
-      <view class="label">任务名称 <text class="required">*</text></view>
+      <view class="label">任务名称</view>
       <input
         class="input"
         placeholder="给任务起个名字"

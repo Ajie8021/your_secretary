@@ -29,6 +29,10 @@ const {
   RETRY_DELAY_MS
 } = require('./reminder-store');
 
+const {
+  collectDueTaskPages
+} = require('./reminder-pagination');
+
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
@@ -36,8 +40,14 @@ cloud.init({
 const db = cloud.database();
 const _ = db.command;
 
-// 单次查询的最大任务数量，避免一次读取过多数据。
+// 单次数据库查询最多读取 100 条。
 const QUERY_LIMIT = 100;
+
+// 每次云函数调用最多扫描 5 页，限制单次执行耗时。
+const MAX_SCAN_BATCHES = 5;
+
+// 每次定时触发最多检查 500 条候选任务。
+const MAX_SCAN_TASKS = QUERY_LIMIT * MAX_SCAN_BATCHES;
 
 /**
  * 查询到期且尚未提醒的任务。
@@ -110,6 +120,47 @@ async function sendReminder(task) {
     task,
     fieldMap: TEMPLATE_FIELD_MAP,
     page: MESSAGE_PAGE
+  });
+}
+
+
+/**
+ * 查询一页到期且尚未提醒的任务。
+ *
+ * @param {Date} now 当前扫描时间
+ * @param {number} offset 分页偏移量
+ * @param {number} limit 本页数量
+ * @returns {Promise<Array>} 本页到期任务
+ */
+async function findDueTaskPage(now, offset, limit) {
+  const query = buildDueTaskQuery(_, now);
+
+  const response = await db.collection('tasks')
+    .where(query)
+    // 使用稳定排序，减少分页过程中任务顺序变化带来的影响。
+    .orderBy('remindAt', 'asc')
+    .orderBy('_id', 'asc')
+    .skip(offset)
+    .limit(limit)
+    .get();
+
+  // 返回数据库原始分页结果。
+  // 分页是否结束应根据数据库原始结果判断。
+  return response.data;
+}
+
+/**
+ * 分页收集本轮需要检查的到期任务。
+ *
+ * 每次最多读取 MAX_SCAN_BATCHES 页。
+ */
+async function findDueTasksInBatches(now) {
+  return collectDueTaskPages({
+    now,
+    batchSize: QUERY_LIMIT,
+    maxBatches: MAX_SCAN_BATCHES,
+    queryPage: (offset, limit) =>
+      findDueTaskPage(now, offset, limit)
   });
 }
 
@@ -203,13 +254,14 @@ exports.main = async (event = {}) => {
         taskId: event.testTaskId
       });
     } else {
-      tasks = await findDueTasks(now);
+      // 普通定时触发使用分页扫描。
+      tasks = await findDueTasksInBatches(now);
     }
 
     const result = await processDueReminders({
       tasks,
       now,
-      limit: event && event.testTaskId ? 1 : QUERY_LIMIT,
+      limit: event && event.testTaskId ? 1 : MAX_SCAN_TASKS,
     
       // 发送前必须先通过事务领取任务。
       claimReminder: task => claimReminderTask(db, task._id, now),
@@ -246,3 +298,5 @@ module.exports.findDueTasks = findDueTasks;
 module.exports.markReminded = markReminded;
 module.exports.findTaskById = findTaskById;
 module.exports.markFailed = markFailed;
+module.exports.findDueTaskPage = findDueTaskPage;
+module.exports.findDueTasksInBatches = findDueTasksInBatches;
