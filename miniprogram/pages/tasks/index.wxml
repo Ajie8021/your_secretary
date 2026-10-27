@@ -54,12 +54,18 @@
 
       <!-- 状态和分类标签 -->
       <view class="task-tags">
-        <text wx:if="{{item.completed}}" class="tag done-tag">已完成</text>
-        <text wx:else class="tag pending-tag">进行中</text>
-        <text wx:if="{{item.type}}" class="tag type-tag">{{item.type}}</text>
-        <text class="tag level-tag">
-          {{item.level === 4 ? '重要且紧急' : item.level === 3 ? '重要' : item.level === 2 ? '紧急' : '一般'}}
-        </text>
+        <view wx:if="{{item.completed}}" class="tag done-tag">
+          <text>已完成</text>
+        </view>
+        <view wx:else class="tag pending-tag">
+          <text>进行中</text>
+        </view>
+        <view wx:if="{{item.type}}" class="tag type-tag">
+          <text>{{item.type}}</text>
+        </view>
+        <view class="tag level-tag">
+          <text>{{item.level === 4 ? '重要且紧急' : item.level === 3 ? '重要' : item.level === 2 ? '紧急' : '一般'}}</text>
+        </view>
       </view>
 
       <!-- 任务描述：最多一行 -->

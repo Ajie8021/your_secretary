@@ -166,13 +166,20 @@
   text-decoration: line-through;
 }
 
+/* 标签外框统一负责尺寸和垂直居中 */
 .tag {
-  display: inline-block;
-  margin: 4rpx 8rpx 4rpx 0;
-  padding: 7rpx 13rpx;
-  border-radius: 10rpx;
-  font-size: 21rpx;
-  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  height: 40rpx;
+  padding: 0 14rpx;
+
+  font-size: 22rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
 }
 
 .top-tag {
