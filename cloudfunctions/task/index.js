@@ -12,7 +12,11 @@ const {
   validateUpdateTask
 } = require('./validation');
 
-const { hasReminderConfigChanged } = require('./task-rules');
+const {
+  hasReminderConfigChanged,
+  isReminderProcessingLocked,
+  buildReminderResetChanges
+} = require('./task-rules');
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
@@ -205,14 +209,26 @@ async function updateTask(id, input, openid) {
   const currentTask = result.data[0];
   const changes = validation.data;
 
-  // 只有提醒时间配置实际发生变化时，才重置提醒发送状态。
+  // 只有截止时间或提醒时间发生变化时，才重置提醒状态。
   const reminderConfigChanged = hasReminderConfigChanged(
     currentTask,
     changes
   );
-  
+
   if (reminderConfigChanged) {
-    changes.reminded = false;
+    // 避免修改正在发送的提醒。
+    if (isReminderProcessingLocked(currentTask)) {
+      return failure(
+        409,
+        '提醒正在处理中，请稍后再修改提醒时间'
+      );
+    }
+  
+    // 重置旧提醒状态，允许新配置重新进入调度流程。
+    Object.assign(
+      changes,
+      buildReminderResetChanges()
+    );
   }
 
   // 再次把 ID 和用户身份放入更新条件，避免更新其他用户的任务。

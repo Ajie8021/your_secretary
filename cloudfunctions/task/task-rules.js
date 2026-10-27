@@ -60,7 +60,57 @@ function isReminderEligible(task) {
   );
 }
 
+/**
+ * 判断提醒是否仍处于有效的处理锁期内。
+ *
+ * 无效或缺失的锁时间不视为有效锁，
+ * 由调用方决定如何恢复异常状态。
+ *
+ * @param {Object} task 当前任务
+ * @param {Date} now 当前时间
+ * @returns {boolean} 是否仍处于有效锁期内
+ */
+function isReminderProcessingLocked(task, now = new Date()) {
+  if (
+    !task ||
+    task.reminderStatus !== 'processing' ||
+    !task.reminderLockUntil
+  ) {
+    return false;
+  }
+
+  const lockUntil = new Date(task.reminderLockUntil);
+
+  return (
+    !Number.isNaN(lockUntil.getTime()) &&
+    lockUntil.getTime() > now.getTime()
+  );
+}
+
+/**
+ * 构造提醒配置变更后的状态重置字段。
+ *
+ * @param {Date} now 当前时间
+ * @returns {Object} 需要写入数据库的提醒状态字段
+ */
+function buildReminderResetChanges(now = new Date()) {
+  if (!(now instanceof Date) || Number.isNaN(now.getTime())) {
+    throw new TypeError('now 必须是有效的 Date 对象');
+  }
+
+  return {
+    reminded: false,
+    reminderStatus: 'pending',
+    reminderLockUntil: null,
+    reminderAttempts: 0,
+    reminderNextRetryAt: null,
+    reminderUpdatedAt: now.toISOString()
+  };
+}
+
 module.exports = {
   hasReminderConfigChanged,
-  isReminderEligible
+  isReminderEligible,
+  isReminderProcessingLocked,
+  buildReminderResetChanges
 };
