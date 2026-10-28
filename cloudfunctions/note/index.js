@@ -16,7 +16,7 @@ const {
   toNoteView, 
   normalizePaging, 
   isValidImages
-} = require("/utils");
+} = require("./utils");
 
 /**
  * 按 id + 当前用户 openid 查询随笔；不存在或不属于当前用户返回 null
