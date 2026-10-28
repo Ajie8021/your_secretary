@@ -1,4 +1,7 @@
 // pages/note/note.js
+
+const PAGE_SIZE = 20;
+
 Page({
 
   /**
@@ -87,7 +90,9 @@ Page({
       this.setData({ list, page: 1, hasMore });
     } catch (e) {
       console.error('[note] refresh', e);
-      wx.showToast({ title: '网络异常，请重试', icon: 'none' });
+      wx.showToast({ 
+        title: '加载失败，请重试', icon: 'none' 
+      });
     } finally {
       this.setData({ refreshing: false });
     }
