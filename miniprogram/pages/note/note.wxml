@@ -1,0 +1,28 @@
+<!--pages/note/note.wxml-->
+<view class="page">
+  <van-empty wx:if="{{!refreshing && list.length === 0}}" description="还没有随笔，点右下角记录一条吧" />
+
+  <view
+    wx:for="{{list}}"
+    wx:key="id"
+    class="note-item {{item.top ? 'is-top' : ''}}"
+    data-id="{{item.id}}"
+    bindtap="goDetail"
+    bindlongpress="onLongPress"
+  >
+    <view class="note-title">
+      <text wx:if="{{item.top}}" class="top-tag">置顶</text>
+      <text>{{item.title}}</text>
+    </view>
+    <view class="note-summary">{{item.summary}}</view>
+    <view class="note-time">{{item.createTime}}</view>
+    <view wx:if="{{item.images.length}}" class="note-imgs">
+      <image wx:for="{{item.images}}" wx:for-item="img" wx:key="*this" src="{{img}}" mode="aspectFill" class="thumb" />
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+  <view wx:if="{{!hasMore && list.length > 0}}" class="no-more">没有更多了</view>
+
+  <van-button type="primary" round class="fab" bindtap="goCreate">＋ 写随笔</van-button>
+</view>

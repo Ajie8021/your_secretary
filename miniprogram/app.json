@@ -3,7 +3,11 @@
     "pages/index/index",
     "pages/tasks/index",
     "pages/task-form/index",
-    "pages/task-detail/index"
+    "pages/task-detail/index",
+    "pages/note/note",
+    "pages/note-detail/note-detail",
+    "pages/note-edit/note-edit",
+    "pages/mine/mine"
   ],
   "window": {
     "navigationBarTitleText": "备忘秘书",
@@ -11,6 +15,27 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f5f6f8"
   },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1989fa",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/tasks/index",
+        "text": "任务"
+      },
+      {
+        "pagePath": "pages/note/note",
+        "text": "随笔"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents"
 }

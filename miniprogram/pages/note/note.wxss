@@ -1,0 +1,115 @@
+/* pages/note/note.wxss */
+
+/* ================= 列表项 ================= */
+.note-item {
+  position: relative;
+  margin-bottom: 24rpx;
+  padding: 28rpx 26rpx 24rpx;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+  box-shadow: 0 8rpx 28rpx rgba(47, 82, 61, 0.045);
+  transition: transform 0.12s ease;
+}
+
+/* 按下反馈，长按置顶时有轻微缩放手感 */
+.note-item:active {
+  transform: scale(0.985);
+}
+
+/* 置顶项左侧强调条 */
+.note-item.is-top {
+  border-left: 6rpx solid #82B69A;
+}
+
+/* ================= 标题行 ================= */
+.note-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  color: #2B4738;
+  font-size: 31rpx;
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: break-all;
+}
+
+/* 置顶标签紧贴标题前 */
+.note-title .top-tag {
+  margin-right: 12rpx;
+}
+
+/* ================= 摘要 ================= */
+.note-summary {
+  margin-top: 16rpx;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: #718177;
+  font-size: 25rpx;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* ================= 时间 ================= */
+.note-time {
+  margin-top: 18rpx;
+  color: #9BA79F;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+/* ================= 缩略图 ================= */
+.note-imgs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 18rpx;
+}
+
+.thumb {
+  width: 140rpx;
+  height: 140rpx;
+  margin: 0 14rpx 14rpx 0;
+  border-radius: 16rpx;
+  background: #EDF3EE;
+}
+
+/* ================= 加载/结束 ================= */
+.loading-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26rpx 0;
+  color: #9BA99F;
+  font-size: 22rpx;
+}
+
+/* 覆盖 app.wxss 的 .end-tip：列表页无分割线版本 */
+.no-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26rpx 0;
+  color: #9BA99F;
+  font-size: 22rpx;
+}
+
+/* ================= 悬浮新建按钮 ================= */
+.fab {
+  position: fixed;
+  right: 32rpx;
+  bottom: calc(48rpx + env(safe-area-inset-bottom));
+  z-index: 20;
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0 32rpx;
+  border-radius: 42rpx;
+  color: #FFFFFF;
+  background: #70AD91;
+  font-size: 26rpx;
+  box-shadow: 0 12rpx 26rpx rgba(86, 151, 116, 0.28);
+}
+
+.fab::after {
+  border: none;
+}

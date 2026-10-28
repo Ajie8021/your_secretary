@@ -71,6 +71,12 @@ Page({
     }
   },
 
+  goToTasks() {
+    wx.switchTab({
+      url: '/pages/tasks/index'
+    });
+  }
+
   // /**
   //  * 调用testCreateTask云函数，完成任务创建测试。
   //  */
@@ -231,10 +237,4 @@ Page({
   //     console.error('[提醒测试] 调用失败：', error);
   //   }
   // },
-
-  goToTasks() {
-    wx.navigateTo({
-      url: '/pages/tasks/index'
-    });
-  }
 });

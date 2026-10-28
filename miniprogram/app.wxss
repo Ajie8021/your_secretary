@@ -1,11 +1,148 @@
+/* ================= 全局基础 ================= */
 page {
   min-height: 100%;
-  background-color: #f5f6f8;
-  color: #222222;
+  background: #F3F7F4;
+  color: #294638;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
   font-size: 28rpx;
-  box-sizing: border-box;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* 去掉 button 默认边框与内边距，统一由页面样式控制 */
 button {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  line-height: normal;
+}
+button::after {
+  border: none;
+}
+
+image {
+  display: block;
+}
+
+/* ================= 页面容器 ================= */
+/* 与任务页 .page 保持一致的通用容器，随笔页可直接复用 */
+.page {
+  min-height: 100vh;
+  padding: 36rpx 28rpx 48rpx;
   box-sizing: border-box;
+  background: #F3F7F4;
+  color: #294638;
+}
+
+/* ================= 通用文字 ================= */
+.eyebrow {
+  margin-bottom: 8rpx;
+  color: #83A491;
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+}
+
+.title {
+  color: #294638;
+  font-size: 44rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.subtitle {
+  margin-top: 8rpx;
+  color: #809187;
+  font-size: 25rpx;
+}
+
+/* ================= 通用标签 ================= */
+/* 外框统一负责尺寸与垂直居中，颜色由具体标签类决定 */
+.tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: 40rpx;
+  padding: 0 14rpx;
+  font-size: 22rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
+}
+
+.top-tag {
+  color: #A57839;
+  background: #FFF1D9;
+}
+
+/* ================= 通用主按钮 ================= */
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  line-height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 22rpx;
+  background: #70AD91;
+  color: #FFFFFF;
+  font-size: 25rpx;
+  box-shadow: 0 8rpx 18rpx rgba(86, 151, 116, 0.16);
+}
+.primary-button::after {
+  border: none;
+}
+
+/* ================= 通用空状态 ================= */
+.empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 36rpx;
+  padding: 70rpx 30rpx;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+}
+
+.empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 34rpx;
+  color: #6CA586;
+  background: #E6F2E9;
+  font-size: 52rpx;
+}
+
+.empty-title {
+  margin-top: 26rpx;
+  color: #385746;
+  font-size: 31rpx;
+  font-weight: 600;
+}
+
+.empty-desc {
+  margin-top: 12rpx;
+  color: #8A9A8F;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+/* ================= 通用加载/结束提示 ================= */
+.end-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26rpx 0;
+  color: #9BA99F;
+  font-size: 22rpx;
+}
+
+.end-line {
+  width: 54rpx;
+  height: 1rpx;
+  margin: 0 16rpx;
+  background: #DCE6DE;
 }
