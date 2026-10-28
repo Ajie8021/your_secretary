@@ -1,2 +1,33 @@
 <!--pages/note-edit/note-edit.wxml-->
-<text>pages/note-edit/note-edit.wxml</text>
+<view class="page">
+  <van-field
+    value="{{title}}"
+    label="标题"
+    placeholder="无题"
+    maxlength="50"
+    bind:change="onTitleInput"
+  />
+  <van-field
+  value="{{content}}"
+  label="正文"
+  type="textarea"
+  placeholder="写点什么…"
+  maxlength="5000"
+  bind:change="onContentInput"
+  custom-class="content-field"
+  input-class="content-textarea"
+/>
+
+  <view class="imgs">
+    <view wx:for="{{images}}" wx:key="*this" class="img-cell">
+      <image src="{{item}}" mode="aspectFill" class="img" />
+      <view class="img-del" data-index="{{index}}" catchtap="removeImage">×</view>
+    </view>
+    <view wx:if="{{images.length < maxImages}}" class="img-add" bindtap="chooseImages">＋</view>
+  </view>
+
+  <view
+  class="save-button {{(saving || uploading) ? 'is-disabled' : ''}}"
+  bindtap="save"
+  >{{uploading ? '图片上传中…' : '保存'}}</view>
+</view>

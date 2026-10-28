@@ -24,7 +24,7 @@
   <view wx:if="{{loading}}" class="loading-tip">加载中…</view>
   <view wx:if="{{!hasMore && list.length > 0}}" class="no-more">没有更多了</view>
 
-  <van-button type="primary" round class="fab" bindtap="goCreate">＋ 写随笔</van-button>
+  <view class="fab" bindtap="goCreate">＋ 写随笔</view>
 
   <!-- <button bindtap="runNoteTests">跑测试</button> -->
 </view>

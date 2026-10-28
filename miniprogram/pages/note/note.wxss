@@ -94,22 +94,23 @@
   font-size: 22rpx;
 }
 
-/* ================= 悬浮新建按钮 ================= */
+/* 悬浮“写随笔”按钮 */
 .fab {
   position: fixed;
-  right: 32rpx;
-  bottom: calc(48rpx + env(safe-area-inset-bottom));
-  z-index: 20;
-  height: 84rpx;
-  line-height: 84rpx;
-  padding: 0 32rpx;
-  border-radius: 42rpx;
+  right: 40rpx;
+  bottom: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 260rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
   color: #FFFFFF;
   background: #70AD91;
-  font-size: 26rpx;
-  box-shadow: 0 12rpx 26rpx rgba(86, 151, 116, 0.28);
+  font-size: 28rpx;
+  box-shadow: 0 10rpx 24rpx rgba(86, 151, 116, 0.28);
+  z-index: 10;
 }
-
-.fab::after {
-  border: none;
+.fab:active {
+  background: #5C9A7E;
 }
