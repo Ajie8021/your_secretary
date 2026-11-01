@@ -1,1 +1,81 @@
 /* pages/note-detail/note-detail.wxss */
+
+/* ================= 标题 ================= */
+/* 注意：app.wxss 已有全局 .title，详情页若只想局部覆盖可加层级；
+   这里直接用全局 .title 即可，如需更紧凑可在 wxml 加自定义类。 */
+
+/* ================= 时间 ================= */
+.time {
+  margin-top: 12rpx;
+  color: #9BA79F;
+  font-size: 22rpx;
+}
+
+/* ================= 正文 ================= */
+.content {
+  margin-top: 28rpx;
+  color: #3A5245;
+  font-size: 29rpx;
+  line-height: 1.85;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* ================= 图片 ================= */
+.imgs {
+  display: flex;
+  flex-direction: column;
+  margin-top: 28rpx;
+}
+
+.imgs .img {
+  width: 100%;
+  margin-bottom: 20rpx;
+  border-radius: 18rpx;
+  background: #EDF3EE;
+}
+
+/* ================= 底部操作 ================= */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #EDF1ED;
+}
+
+.actions button {
+  margin-left: 16rpx;
+  padding: 0 28rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+}
+
+/* van-button 通过 custom-class 注入，统一尺寸 */
+.actions .action-edit,
+.actions .action-delete {
+  margin-left: 16rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 28rpx;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+}
+
+/* 若使用 van-button，上面 button 选择器不生效，改用类选择器 */
+.actions .action-edit {
+  color: #4E8768;
+  background: #EAF4ED;
+}
+
+.actions .action-delete {
+  color: #FFFFFF;
+  background: #C97B7B;
+}
+
+.actions .action-edit::after,
+.actions .action-delete::after {
+  border: none;
+}

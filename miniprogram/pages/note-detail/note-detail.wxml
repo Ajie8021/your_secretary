@@ -1,2 +1,23 @@
 <!--pages/note-detail/note-detail.wxml-->
-<text>pages/note-detail/note-detail.wxml</text>
+<view class="page" wx:if="{{note}}">
+  <view class="title">{{note.title}}</view>
+  <view class="time">{{note.createTime}}</view>
+  <view class="content">{{note.content}}</view>
+
+  <view class="imgs" wx:if="{{note.images.length}}">
+    <image
+      wx:for="{{note.images}}"
+      wx:key="*this"
+      src="{{item}}"
+      data-src="{{item}}"
+      mode="widthFix"
+      class="img"
+      bindtap="preview"
+    />
+  </view>
+
+  <view class="actions">
+    <van-button size="small" custom-class="action-edit" bindtap="goEdit">编辑</van-button>
+    <van-button size="small" custom-class="action-delete" bindtap="onDelete">删除</van-button>
+  </view>
+</view>
