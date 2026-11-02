@@ -1,1 +1,81 @@
 /* pages/mine/mine.wxss */
+
+/* ================= 页面 ================= */
+.page {
+  min-height: 100vh;
+  padding: 32rpx 28rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background: #F6F9F7;
+}
+
+/* ================= 用户头部卡片 ================= */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28rpx;
+  padding: 36rpx 30rpx;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+  box-shadow: 0 8rpx 28rpx rgba(47, 82, 61, 0.045);
+  transition: transform 0.12s ease;
+}
+
+.header:active {
+  transform: scale(0.985);
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  margin-right: 26rpx;
+  border-radius: 50%;
+  background: #EDF3EE;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nickname {
+  color: #2B4738;
+  font-size: 34rpx;
+  font-weight: 600;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.sub {
+  margin-top: 10rpx;
+  color: #9BA79F;
+  font-size: 23rpx;
+  line-height: 1.4;
+}
+
+/* ================= 功能列表卡片 ================= */
+/* 包裹 van-cell-group，统一卡片外观 */
+.cell-card {
+  overflow: hidden;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+  box-shadow: 0 8rpx 28rpx rgba(47, 82, 61, 0.045);
+}
+
+/* 覆盖 Vant 单元格的默认内边距与字号，贴近 note 列表观感 */
+.cell-card .van-cell {
+  padding: 30rpx 30rpx;
+  color: #2B4738;
+  font-size: 29rpx;
+  line-height: 1.5;
+}
+
+.cell-card .van-cell::after {
+  border-color: #EEF3EF;
+}
+
+/* 邮箱等右侧值文字弱化 */
+.cell-card .van-cell__value {
+  color: #718177;
+  font-size: 25rpx;
+}

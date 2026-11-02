@@ -5,7 +5,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    user: null,
+    email: '714072715@qq.com' // 作者邮箱，按实际替换
   },
 
   /**
@@ -26,7 +27,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.loadProfile();
   },
 
   /**
@@ -62,5 +63,43 @@ Page({
    */
   onShareAppMessage() {
 
+  },
+
+  /** 读取资料；失败只提示，不阻塞入口展示 */
+  async loadProfile() {
+    try {
+      const res = await wx.cloud.callFunction({ 
+        name: 'user', 
+        data: { action: 'getProfile' } 
+      });
+
+      const result = res.result;
+      if (result && result.code === 0) 
+        this.setData({ user: result.data.user });
+
+    } catch (e) {
+      console.error('[mine] loadProfile', e);
+    }
+  },
+
+  goProfile() { 
+    wx.navigateTo({ 
+      url: '/pages/mine/profile/profile' 
+    }); 
+  },
+  goFeedback() { 
+    wx.navigateTo({ 
+      url: '/pages/mine/feedback/feedback' 
+    }); 
+  },
+  goMessage() { 
+    wx.navigateTo({ 
+      url: '/pages/mine/message/message' 
+    }); 
+  },
+
+  /** 复制邮箱 */
+  copyEmail() {
+    wx.setClipboardData({ data: this.data.email });
   }
 })

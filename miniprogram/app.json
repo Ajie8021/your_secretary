@@ -7,7 +7,10 @@
     "pages/note/note",
     "pages/note-detail/note-detail",
     "pages/note-edit/note-edit",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/mine/profile/profile",
+    "pages/mine/feedback/feedback",
+    "pages/mine/message/message"
   ],
   "window": {
     "navigationBarTitleText": "备忘秘书",

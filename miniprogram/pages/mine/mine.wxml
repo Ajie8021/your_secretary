@@ -1,2 +1,17 @@
 <!--pages/mine/mine.wxml-->
-<text>pages/mine/mine.wxml</text>
+<view class="page">
+  <view class="header" bindtap="goProfile">
+    <image class="avatar" src="{{user.avatar || '/assets/default-avatar.jpg'}}" mode="aspectFill" />
+    <view class="info">
+      <view class="nickname">{{user.nickname || '未设置昵称'}}</view>
+      <view class="sub">点击编辑资料</view>
+    </view>
+  </view>
+
+  <van-cell-group custom-class="cell-card">
+    <van-cell title="基础资料" is-link bind:click="goProfile" />
+    <van-cell title="我的反馈" is-link bind:click="goFeedback" />
+    <van-cell title="系统消息" is-link bind:click="goMessage" />
+    <van-cell title="作者邮箱" value="{{email}}" is-link bind:click="copyEmail" />
+  </van-cell-group>
+</view>
