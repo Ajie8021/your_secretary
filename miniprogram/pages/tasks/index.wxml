@@ -1,124 +1,54 @@
-
 <view class="page">
-  <!-- 页面标题 -->
   <view class="header">
     <view class="header-info">
-      <view class="eyebrow">MY TASKS</view>
       <view class="title">我的任务</view>
-      <view class="subtitle">把每一件小事，都安排妥当</view>
-      <view class="total-count">共 {{total}} 项任务</view>
+      <view class="subtitle">共 {{total}} 项任务</view>
     </view>
-
-    <button class="add-button" bindtap="createTask">
-      <text class="add-icon">＋</text>
-      <text>新建</text>
-    </button>
+    <view class="add-button" bindtap="createTask">＋ 新建</view>
   </view>
 
-  <!-- 轻提示横幅 -->
-  <view class="tip-banner">
-    <view class="tip-icon">✓</view>
-    <view class="tip-text">合理规划时间，让每项任务都有序进行</view>
-  </view>
-
-  <!-- 空状态 -->
   <view wx:if="{{tasks.length === 0 && !loading}}" class="empty-card">
-    <view class="empty-icon">✓</view>
     <view class="empty-title">暂时没有任务</view>
     <view class="empty-desc">给自己安排一件小事，从这里开始</view>
-    <button class="empty-add-button" bindtap="createTask">
-      ＋ 创建第一项任务
-    </button>
+    <view class="empty-add-button" bindtap="createTask">＋ 创建第一项任务</view>
   </view>
 
-  <!-- 任务列表 -->
-  <view
-    wx:for="{{tasks}}"
-    wx:key="id"
-    class="task-card"
-  >
-    <view class="task-main">
-      <view class="task-title-row">
-        <view class="task-symbol {{item.completed ? 'symbol-done' : ''}}">
-          {{item.completed ? '✓' : '•'}}
-        </view>
+  <view wx:for="{{tasks}}" wx:key="id" class="task-swipe">
+    <view class="swipe-action {{item.completed ? 'swipe-restore' : 'swipe-complete'}}">
+      {{item.completed ? '恢复' : '完成'}}
+    </view>
 
-        <view class="task-title-wrap">
-          <view class="task-title {{item.completed ? 'completed' : ''}}">
-            {{item.name || '未命名任务'}}
-          </view>
-        </view>
-
-        <text wx:if="{{item.top}}" class="tag top-tag">置顶</text>
+    <view
+      class="task-item {{item.top ? 'is-top' : ''}} {{item.completed ? 'is-completed' : ''}}"
+      style="transform: translateX({{item._swipeX || 0}}px);"
+      data-index="{{index}}"
+      data-id="{{item.id}}"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      bindtouchcancel="onTouchEnd"
+      bindlongpress="onLongPress"
+    >
+      <view class="task-title">
+        <text wx:if="{{item.top}}" class="top-tag">置顶</text>
+        <text class="{{item.completed ? 'completed' : ''}}">{{item.name || '未命名任务'}}</text>
       </view>
 
-      <!-- 状态和分类标签 -->
       <view class="task-tags">
-        <view wx:if="{{item.completed}}" class="tag done-tag">
-          <text>已完成</text>
-        </view>
-        <view wx:else class="tag pending-tag">
-          <text>进行中</text>
-        </view>
-        <view wx:if="{{item.type}}" class="tag type-tag">
-          <text>{{item.type}}</text>
-        </view>
-        <view class="tag level-tag">
-          <text>{{item.level === 4 ? '重要且紧急' : item.level === 3 ? '重要' : item.level === 2 ? '紧急' : '一般'}}</text>
-        </view>
+        <text class="tag {{item.completed ? 'done-tag' : 'pending-tag'}}">{{item.completed ? '已完成' : '进行中'}}</text>
+        <text wx:if="{{item.type}}" class="tag type-tag">{{item.type}}</text>
+        <text class="tag level-tag">{{item.level === 4 ? '重要且紧急' : item.level === 3 ? '重要' : item.level === 2 ? '紧急' : '一般'}}</text>
       </view>
 
-      <!-- 任务描述：最多一行 -->
-      <view wx:if="{{item.content}}" class="task-content">
-        {{item.content}}
-      </view>
+      <view wx:if="{{item.content}}" class="task-content">{{item.content}}</view>
 
-      <!-- 截止时间 -->
-      <view class="task-ddl-row">
-        <text class="calendar-icon">◷</text>
-        <text class="task-ddl">
-          截止时间：{{item.ddl || '未设置'}}
-        </text>
-      </view>
-    </view>
-
-    <view class="task-footer">
-      <view class="task-footer-tip">
-        {{item.completed ? '这项任务已完成' : '记得按时完成哦'}}
-      </view>
-
-      <view class="task-actions">
-        <button
-          class="detail-button"
-          size="mini"
-          data-id="{{item.id}}"
-          bindtap="showTaskDetail"
-        >详情</button>
-
-        <button
-          class="manage-button"
-          size="mini"
-          data-id="{{item.id}}"
-          bindtap="showActions"
-        >管理</button>
-      </view>
+      <view class="task-ddl">截止时间：{{item.ddl || '未设置'}}</view>
     </view>
   </view>
 
-  <!-- 加载更多 -->
-  <button
-    wx:if="{{hasMore}}"
-    class="more-button"
-    loading="{{loading}}"
-    disabled="{{loading}}"
-    bindtap="loadMore"
-  >
-    加载更多任务
-  </button>
-
-  <view wx:if="{{!hasMore && tasks.length > 0}}" class="end-tip">
-    <view class="end-line"></view>
-    <text>已显示全部任务</text>
-    <view class="end-line"></view>
+  <view wx:if="{{hasMore}}" class="more-button" bindtap="loadMore">
+    {{loading ? '加载中…' : '加载更多任务'}}
   </view>
+
+  <view wx:if="{{!hasMore && tasks.length > 0}}" class="no-more">已显示全部任务</view>
 </view>

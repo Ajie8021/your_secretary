@@ -128,5 +128,36 @@ Page({
     wx.navigateTo({
       url: `/pages/task-form/index?id=${encodeURIComponent(id)}`
     });
+  },
+
+  /**
+  * 删除当前任务：二次确认后调用云函数，成功返回列表。
+  */
+  onDelete() {
+    const id = this.data.task && (this.data.task.id || this.data.task._id);
+    if (!id) {
+      wx.showToast({ title: '任务编号缺失', icon: 'none' });
+      return;
+    }
+
+    wx.showModal({
+      title: '删除任务',
+      content: '删除后无法恢复，确定删除吗？',
+      success: async (res) => {
+        if (!res.confirm) return;
+        try {
+          await taskApi.deleteTask(id);
+          wx.showToast({ title: '删除成功', icon: 'success' });
+          setTimeout(() => {
+            wx.navigateBack({
+              delta: 1,
+              fail: () => wx.redirectTo({ url: '/pages/task/index' })
+            });
+          }, 500);
+        } catch (error) {
+          wx.showToast({ title: error.message || '删除失败', icon: 'none' });
+        }
+      }
+    });
   }
 });
