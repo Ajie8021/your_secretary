@@ -1,2 +1,42 @@
 <!--pages/mine/feedback/feedback.wxml-->
-<text>pages/mine/feedback/feedback.wxml</text>
+<view class="page">
+  <view class="submit-box">
+    <van-field
+      value="{{input}}"
+      type="textarea"
+      placeholder="说说你的建议或遇到的问题…"
+      autosize
+      border="{{false}}"
+      bind:change="onInput"
+    />
+    <van-button custom-class="submit-btn" loading="{{submitting}}" bindtap="submit">提交反馈</van-button>
+  </view>
+
+  <van-empty wx:if="{{list.length === 0}}" description="还没有反馈记录" />
+
+  <view wx:for="{{list}}" wx:key="id" class="fb-item">
+    <view class="fb-content">{{item.content}}</view>
+    <view class="fb-time">{{item.createTime}}</view>
+
+    <view wx:if="{{item.replied}}" class="fb-reply">
+      <view class="reply-label">管理员回复：</view>
+      <view>{{item.reply}}</view>
+      <view class="fb-time">{{item.repliedAt}}</view>
+    </view>
+
+    <view wx:if="{{!item.replied && editingId !== item.id}}" class="fb-actions">
+      <van-button size="small" data-id="{{item.id}}" bindtap="startEdit">修改</van-button>
+    </view>
+
+    <view wx:if="{{editingId === item.id}}" class="fb-edit">
+      <van-field value="{{editContent}}" type="textarea" autosize border="{{false}}" bind:change="onEditInput" />
+      <view class="fb-actions">
+        <van-button size="small" bindtap="cancelEdit">取消</van-button>
+        <van-button size="small" type="primary" bindtap="saveEdit">保存</van-button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+  <view wx:if="{{!hasMore && list.length > 0}}" class="no-more">没有更多了</view>
+</view>
