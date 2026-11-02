@@ -1,18 +1,30 @@
 // pages/mine/profile/profile.js
+const GENDERS = ['男', '女', '保密'];
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    form: { 
+      avatar: '', 
+      nickname: '', 
+      gender: '保密', 
+      birthday: '', 
+      address: '', 
+      job: '' 
+    },
+    genders: GENDERS,
+    showGender: false,
+    saving: false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-
+    this.loadProfile();
   },
 
   /**
@@ -62,5 +74,127 @@ Page({
    */
   onShareAppMessage() {
 
+  },
+
+  async loadProfile() {
+    try {
+      const res = await wx.cloud.callFunction({ 
+        name: 'user', 
+        data: { action: 'getProfile' } 
+      });
+
+      const result = res.result;
+      if (!result || result.code !== 0) {
+        wx.showToast({ 
+          title: (result && result.message) || '加载失败', 
+          icon: 'none' 
+        });
+        return;
+      }
+
+      const { 
+        avatar, nickname, 
+        gender, birthday, 
+        address, job 
+      } = result.data.user;
+      this.setData({ 
+        form: { 
+          avatar, nickname, gender, 
+          birthday, address, job 
+        } 
+      });
+    } catch (e) {
+      console.error('[profile] load', e);
+      wx.showToast({ 
+        title: '网络异常，请重试', icon: 'none' 
+      });
+    }
+  },
+
+  onFieldChange(e) {
+    const key = e.currentTarget.dataset.key;
+    this.setData({ [`form.${key}`]: e.detail });
+  },
+
+  /** 选择并上传头像，成功才写入 form.avatar */
+  async chooseAvatar() {
+    let chosen;
+    try {
+      chosen = await wx.chooseMedia({ 
+        count: 1, 
+        mediaType: ['image'], 
+        sizeType: ['compressed'] 
+      });
+    } catch (e) { return; }
+    const file = chosen.tempFiles[0];
+    wx.showLoading({ title: '上传中' });
+
+    try {
+      const ext = (
+        file.tempFilePath.match(/\.[a-zA-Z0-9]+$/) || ['.jpg']
+      )[0];
+      const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`;
+
+      const up = await wx.cloud.uploadFile({ 
+        cloudPath, filePath: file.tempFilePath 
+      });
+
+      if (!up.fileID) throw new Error('no fileID');
+      this.setData({ 'form.avatar': up.fileID });
+
+    } catch (e) {
+      console.error('[profile] avatar upload', e);
+      wx.showToast({ title: '头像上传失败', icon: 'none' });
+
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  openGender() { this.setData({ showGender: true }); },
+  onGenderSelect(e) {
+    this.setData({ 
+      'form.gender': e.detail, showGender: false 
+    });
+  },
+  onBirthdayChange(e) { 
+    this.setData({ 'form.birthday': e.detail.value }); 
+  },
+
+  /** 保存：前端校验生日格式，云函数为准；失败保留表单 */
+  async save() {
+    if (this.data.saving) return;
+    const f = this.data.form;
+    if (f.birthday && !/^\d{4}-\d{2}-\d{2}$/.test(f.birthday)) {
+      wx.showToast({ 
+        title: '生日格式应为 YYYY-MM-DD', icon: 'none' 
+      });
+      return;
+    }
+    this.setData({ saving: true });
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'user',
+        data: { action: 'updateProfile', ...f }
+      });
+      const result = res.result;
+      if (!result || result.code !== 0) {
+        wx.showToast({ 
+          title: (result && result.message) || '保存失败', 
+          icon: 'none' 
+        });
+        return;
+      }
+      wx.showToast({ title: '已保存', icon: 'success' });
+      setTimeout(() => wx.navigateBack(), 500);
+
+    } catch (e) {
+      console.error('[profile] save', e);
+      wx.showToast({ 
+        title: '网络异常，保存失败', icon: 'none' 
+      });
+    } finally {
+      this.setData({ saving: false });
+    }
   }
 })

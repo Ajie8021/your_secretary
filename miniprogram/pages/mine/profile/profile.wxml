@@ -1,2 +1,26 @@
 <!--pages/mine/profile/profile.wxml-->
-<text>pages/mine/profile/profile.wxml</text>
+<view class="page">
+  <view class="avatar-row" bindtap="chooseAvatar">
+    <image class="avatar" src="{{form.avatar || '/assets/default-avatar.jpg'}}" mode="aspectFill" />
+    <text class="tip">点击更换头像</text>
+  </view>
+
+  <view class="form-card">
+    <van-field label="昵称" value="{{form.nickname}}" data-key="nickname" bind:change="onFieldChange" placeholder="请输入昵称" />
+    <van-field label="性别" value="{{form.gender}}" readonly is-link bind:click="openGender" />
+    <van-field label="生日" value="{{form.birthday}}" data-key="birthday" bind:change="onFieldChange" placeholder="YYYY-MM-DD" />
+    <van-field label="地址" value="{{form.address}}" data-key="address" bind:change="onFieldChange" placeholder="请输入地址" />
+    <van-field label="职业" value="{{form.job}}" data-key="job" bind:change="onFieldChange" placeholder="请输入职业" />
+  </view>
+
+  <van-button custom-class="save-btn" block loading="{{saving}}" bindtap="save">保存</van-button>
+
+  <van-popup custom-class="gender-popup" show="{{showGender}}" position="bottom" bind:close="showGender=false">
+    <van-picker
+      show-toolbar
+      columns="{{genders}}"
+      bind:confirm="onGenderSelect"
+      bind:cancel="showGender=false"
+    />
+  </van-popup>
+</view>

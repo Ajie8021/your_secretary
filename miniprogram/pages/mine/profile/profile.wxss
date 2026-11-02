@@ -1,1 +1,95 @@
 /* pages/mine/profile/profile.wxss */
+
+.page {
+  min-height: 100vh;
+  padding: 32rpx 28rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background: #F6F9F7;
+}
+
+/* ================= 头像区 ================= */
+.avatar-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28rpx;
+  padding: 40rpx 0 32rpx;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+  box-shadow: 0 8rpx 28rpx rgba(47, 82, 61, 0.045);
+  transition: transform 0.12s ease;
+}
+
+.avatar-row:active {
+  transform: scale(0.985);
+}
+
+.avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #EDF3EE;
+}
+
+.avatar-row .tip {
+  margin-top: 18rpx;
+  color: #9BA79F;
+  font-size: 23rpx;
+}
+
+/* ================= 表单卡片 ================= */
+.form-card {
+  overflow: hidden;
+  margin-bottom: 32rpx;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+  box-shadow: 0 8rpx 28rpx rgba(47, 82, 61, 0.045);
+}
+
+/* 统一 Vant 字段外观 */
+.form-card .van-cell {
+  padding: 30rpx 30rpx;
+  color: #2B4738;
+  font-size: 29rpx;
+  line-height: 1.5;
+}
+
+.form-card .van-cell::after {
+  border-color: #EEF3EF;
+}
+
+.form-card .van-field__label {
+  color: #2B4738;
+  font-size: 29rpx;
+}
+
+.form-card .van-field__control {
+  color: #2B4738;
+  font-size: 29rpx;
+}
+
+/* 占位符弱化 */
+.form-card .van-field__control::placeholder {
+  color: #B4C0B8;
+}
+
+/* ================= 保存按钮 ================= */
+.save-btn {
+  margin-top: 12rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  color: #FFFFFF;
+  background: #70AD91;
+  font-size: 29rpx;
+  box-shadow: 0 10rpx 24rpx rgba(86, 151, 116, 0.28);
+}
+
+.save-btn:active {
+  background: #5C9A7E;
+}
+
+/* ================= 性别选择弹层 ================= */
+.gender-popup {
+  border-radius: 24rpx 24rpx 0 0;
+  background: #FFFFFF;
+}
