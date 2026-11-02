@@ -5,11 +5,14 @@
       value="{{input}}"
       type="textarea"
       placeholder="说说你的建议或遇到的问题…"
-      autosize
+      autosize="{{false}}"
       border="{{false}}"
+      custom-class="submit-textarea"
       bind:change="onInput"
     />
-    <van-button custom-class="submit-btn" loading="{{submitting}}" bindtap="submit">提交反馈</van-button>
+    <view class="submit-btn-wrap">
+      <van-button custom-class="submit-btn" loading="{{submitting}}" bindtap="submit">提交反馈</van-button>
+    </view>
   </view>
 
   <van-empty wx:if="{{list.length === 0}}" description="还没有反馈记录" />

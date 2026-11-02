@@ -35,8 +35,24 @@
   color: #B4C0B8;
 }
 
+/* 文本框加高：通过 custom-class 作用到 textarea 本体 */
+.submit-textarea .van-field__control {
+  min-height: 280rpx;   /* 约 6~7 行，可按需调 */
+  height: 280rpx;
+  padding: 4rpx 0;
+  box-sizing: border-box;
+}
+
+/* 提交按钮居中容器 */
+.submit-btn-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 20rpx;
+}
+
+/* 按钮本身：固定宽度、圆角、绿色 */
 .submit-btn {
-  margin: 16rpx 22rpx 0;
+  width: 320rpx;
   height: 80rpx;
   border-radius: 40rpx;
   color: #FFFFFF;
