@@ -82,10 +82,15 @@ Page({
     }
   },
 
+  // 顶部卡片：进入编辑
   goProfile() { 
     wx.navigateTo({ 
       url: '/pages/mine/profile/profile' 
     }); 
+  },
+  // 基础资料 cell：进入查看
+  goProfileView() {
+    wx.navigateTo({ url: '/pages/mine/profile/profile?mode=view' });
   },
   goFeedback() { 
     wx.navigateTo({ 

@@ -1,21 +1,67 @@
 <!--pages/mine/profile/profile.wxml-->
 <view class="page">
-  <view class="avatar-row" bindtap="chooseAvatar">
+  <!-- 头像区：查看模式不显示"点击更换"提示，也不可点 -->
+  <view class="avatar-row" bindtap="{{isView ? '' : 'chooseAvatar'}}">
     <image class="avatar" src="{{form.avatar || '/assets/default-avatar.jpg'}}" mode="aspectFill" />
-    <text class="tip">点击更换头像</text>
+    <text wx:if="{{!isView}}" class="tip">点击更换头像</text>
   </view>
 
   <view class="form-card">
-    <van-field label="昵称" value="{{form.nickname}}" data-key="nickname" bind:change="onFieldChange" placeholder="请输入昵称" />
-    <van-field label="性别" value="{{form.gender}}" readonly is-link bind:click="openGender" />
-    <van-field label="生日" value="{{form.birthday}}" data-key="birthday" bind:change="onFieldChange" placeholder="YYYY-MM-DD" />
-    <van-field label="地址" value="{{form.address}}" data-key="address" bind:change="onFieldChange" placeholder="请输入地址" />
-    <van-field label="职业" value="{{form.job}}" data-key="job" bind:change="onFieldChange" placeholder="请输入职业" />
+    <!-- 昵称 -->
+    <van-field 
+      label="昵称" 
+      value="{{form.nickname}}" 
+      data-key="nickname" 
+      readonly="{{isView}}"
+      bind:change="onFieldChange" 
+      placeholder="{{isView ? '未填写' : '请输入昵称'}}"
+    />
+
+    <!-- 性别：查看模式只读展示，编辑模式可点选 -->
+    <van-field 
+      label="性别" 
+      value="{{form.gender}}" 
+      readonly="{{isView}}"
+      is-link="{{!isView}}"
+      bind:click="openGender" 
+    />
+
+    <!-- 生日 -->
+    <van-field 
+      label="生日" 
+      value="{{form.birthday}}" 
+      data-key="birthday" 
+      readonly="{{isView}}"
+      bind:change="onFieldChange" 
+      placeholder="YYYY-MM-DD" 
+    />
+
+    <!-- 地址 -->
+    <van-field
+      label="地址"
+      value="{{form.address}}"
+      data-key="address"
+      readonly="{{isView}}"
+      placeholder="{{isView ? '未填写' : '请输入地址'}}"
+      bind:change="onFieldChange"
+    />
+
+    <!-- 职业 -->
+    <van-field
+      label="职业"
+      value="{{form.job}}"
+      data-key="job"
+      readonly="{{isView}}"
+      placeholder="{{isView ? '未填写' : '请输入职业'}}"
+      bind:change="onFieldChange"
+    />
   </view>
 
-  <van-button custom-class="save-btn" block loading="{{saving}}" bindtap="save">保存</van-button>
+  <!-- 保存按钮只在编辑模式显示 -->
+  <van-button wx:if="{{!isView}}" custom-class="save-btn" block loading="{{saving}}" bindtap="save">保存</van-button>
 
-  <van-popup custom-class="gender-popup" show="{{showGender}}" position="bottom" bind:close="showGender=false">
+  <!-- 性别选择器只在编辑模式挂载 -->
+  <van-popup wx:if="{{!isView}}" custom-class="gender-popup" show="{{showGender}}" position="bottom" bind:close="showGender=false">
     <van-picker
       show-toolbar
       columns="{{genders}}"

@@ -7,6 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    isView: false,   // true = 只读查看
     form: { 
       avatar: '', 
       nickname: '', 
@@ -24,6 +25,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    const isView = options && options.mode === 'view';
+    this.setData({ isView });
+
+    // 只读模式设置导航标题
+    wx.setNavigationBarTitle({ 
+      title: isView ? '基础资料' : '编辑资料' 
+    });
     this.loadProfile();
   },
 
@@ -93,9 +101,8 @@ Page({
       }
 
       const { 
-        avatar, nickname, 
-        gender, birthday, 
-        address, job 
+        avatar, nickname, gender, 
+        birthday, address, job 
       } = result.data.user;
       this.setData({ 
         form: { 
@@ -111,13 +118,17 @@ Page({
     }
   },
 
+  // 只读模式下这些交互直接返回
   onFieldChange(e) {
+    if (this.data.isView) return;
     const key = e.currentTarget.dataset.key;
     this.setData({ [`form.${key}`]: e.detail });
   },
 
   /** 选择并上传头像，成功才写入 form.avatar */
   async chooseAvatar() {
+    if (this.data.isView) return;
+
     let chosen;
     try {
       chosen = await wx.chooseMedia({ 
@@ -151,19 +162,24 @@ Page({
     }
   },
 
-  openGender() { this.setData({ showGender: true }); },
+  openGender() { 
+    if (this.data.isView) return;
+    this.setData({ showGender: true }); 
+  },
   onGenderSelect(e) {
     this.setData({ 
       'form.gender': e.detail, showGender: false 
     });
   },
+  // 生日：编辑模式用 picker，查看模式不触发
   onBirthdayChange(e) { 
+    if (this.data.isView) return;
     this.setData({ 'form.birthday': e.detail.value }); 
   },
 
   /** 保存：前端校验生日格式，云函数为准；失败保留表单 */
   async save() {
-    if (this.data.saving) return;
+    if (this.data.isView || this.data.saving) return;
     const f = this.data.form;
     if (f.birthday && !/^\d{4}-\d{2}-\d{2}$/.test(f.birthday)) {
       wx.showToast({ 

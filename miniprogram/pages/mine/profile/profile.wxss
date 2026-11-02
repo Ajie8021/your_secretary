@@ -68,6 +68,11 @@
   font-size: 29rpx;
 }
 
+/* 只读字段值颜色加深，避免看起来像禁用 */
+.form-card .van-field__control[readonly] {
+  color: #2B4738;
+}
+
 /* 占位符弱化 */
 .form-card .van-field__control::placeholder {
   color: #B4C0B8;
