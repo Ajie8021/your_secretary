@@ -6,7 +6,8 @@ Page({
    */
   data: {
     user: null,
-    email: '714072715@qq.com' // 作者邮箱，按实际替换
+    email: '714072715@qq.com', // 作者邮箱
+    isAdmin: false          // 仅控制入口显示，不构成权限
   },
 
   /**
@@ -28,6 +29,7 @@ Page({
    */
   onShow() {
     this.loadProfile();
+    this.checkAdmin();
   },
 
   /**
@@ -79,6 +81,23 @@ Page({
 
     } catch (e) {
       console.error('[mine] loadProfile', e);
+    }
+  },
+
+  /** 查询是否管理员，仅用于显示入口；真正的鉴权在云函数 */
+  async checkAdmin() {
+    try {
+      const res = await wx.cloud.callFunction({ 
+        name: 'admin', 
+        data: { action: 'check' } 
+      });
+      const result = res.result;
+      if (result && result.code === 0) {
+        this.setData({ isAdmin: !!result.data.isAdmin });
+      }
+    } catch (e) {
+      // 失败不展示入口，不影响普通使用
+      console.error('[mine] checkAdmin', e);
     }
   },
 

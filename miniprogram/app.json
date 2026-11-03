@@ -10,7 +10,8 @@
     "pages/mine/mine",
     "pages/mine/profile/profile",
     "pages/mine/feedback/feedback",
-    "pages/mine/message/message"
+    "pages/mine/message/message",
+    "pages/admin/feedback/feedback"
   ],
   "window": {
     "navigationBarTitleText": "备忘秘书",
