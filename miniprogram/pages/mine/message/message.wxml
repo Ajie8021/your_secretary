@@ -1,2 +1,12 @@
-<!--pages/mine/message/message.wxml-->
-<text>pages/mine/message/message.wxml</text>
+<view class="page">
+  <van-empty wx:if="{{!loading && messages.length === 0}}" description="暂无系统消息" />
+
+  <view wx:for="{{messages}}" wx:key="id" class="msg-item">
+    <view class="msg-title">反馈回复</view>
+    <view class="msg-origin">你的反馈：{{item.content}}</view>
+    <view class="msg-reply">{{item.reply}}</view>
+    <view class="msg-time">{{item.repliedAt}}</view>
+  </view>
+
+  <van-button custom-class="footer-btn" block bindtap="goFeedback">查看全部反馈</van-button>
+</view>

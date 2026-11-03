@@ -1,1 +1,86 @@
 /* pages/mine/message/message.wxss */
+
+.page {
+  min-height: 100vh;
+  padding: 32rpx 28rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background: #F6F9F7;
+}
+
+/* ================= 消息项 ================= */
+.msg-item {
+  position: relative;
+  margin-bottom: 24rpx;
+  padding: 28rpx 26rpx 24rpx;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+  box-shadow: 0 8rpx 28rpx rgba(47, 82, 61, 0.045);
+}
+
+/* 左侧强调条，呼应置顶项视觉语言 */
+.msg-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 28rpx;
+  bottom: 28rpx;
+  width: 6rpx;
+  border-radius: 6rpx;
+  background: #82B69A;
+}
+
+.msg-title {
+  color: #2B4738;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* 用户原反馈，弱化展示 */
+.msg-origin {
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 14rpx;
+  background: #F6F9F7;
+  color: #718177;
+  font-size: 25rpx;
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* 管理员回复，突出展示 */
+.msg-reply {
+  margin-top: 16rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 14rpx;
+  border-left: 6rpx solid #82B69A;
+  background: #F3F8F5;
+  color: #2B4738;
+  font-size: 27rpx;
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.msg-time {
+  margin-top: 16rpx;
+  color: #9BA79F;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+/* ================= 底部入口按钮 ================= */
+.footer-btn {
+  margin-top: 12rpx;
+  height: 84rpx;
+  border-radius: 42rpx;
+  color: #70AD91;
+  background: #FFFFFF;
+  border: 1rpx solid #CFE3D7;
+  font-size: 28rpx;
+}
+
+.footer-btn:active {
+  background: #F3F8F5;
+}
