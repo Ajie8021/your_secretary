@@ -1,2 +1,52 @@
-<!--pages/admin/feedback/feedback.wxml-->
-<text>pages/admin/feedback/feedback.wxml</text>
+<view class="page">
+  <!-- 无权限：用与卡片同风格的简单提示，不用裸 van-empty -->
+  <view wx:if="{{!authorized}}" class="no-perm">
+    <view class="title">无管理员权限</view>
+    <view class="desc">如需管理反馈，请联系维护者将你的账号加入管理员白名单。</view>
+  </view>
+
+  <block wx:else>
+    <van-empty wx:if="{{list.length === 0}}" description="暂无反馈" />
+
+    <view wx:for="{{list}}" wx:key="id" class="fb-item">
+      <!-- 头部：左侧"用户反馈"，右侧已回复徽标 -->
+      <view style="display:flex;align-items:center;justify-content:space-between;">
+        <text style="color:#567560;font-size:23rpx;font-weight:600;">用户反馈</text>
+        <text wx:if="{{item.replied}}" class="replied-tag">已回复</text>
+      </view>
+
+      <view class="fb-content">{{item.content}}</view>
+      <view class="fb-time">{{item.createTime}}</view>
+
+      <view wx:if="{{item.replied}}" class="fb-reply">
+        <view class="reply-label">管理员回复：</view>
+        <view>{{item.reply}}</view>
+        <view class="fb-time">{{item.repliedAt}}</view>
+      </view>
+
+      <!-- 未回复：右侧单按钮"回复"，复用 fb-actions--single -->
+      <view wx:if="{{!item.replied && replyingId !== item.id}}" class="fb-actions fb-actions--single">
+        <van-button size="small" custom-class="fb-btn fb-btn--primary" data-id="{{item.id}}" bindtap="startReply">回复</van-button>
+      </view>
+
+      <!-- 回复态：取消 + 发送，与用户页"取消 + 保存"完全一致 -->
+      <view wx:if="{{replyingId === item.id}}" class="fb-edit">
+        <van-field
+          value="{{replyInput}}"
+          type="textarea"
+          autosize
+          border="{{false}}"
+          placeholder="输入回复内容"
+          bind:change="onReplyInput"
+        />
+        <view class="fb-actions">
+          <van-button size="small" custom-class="fb-btn fb-btn--cancel" bindtap="cancelReply">取消</van-button>
+          <van-button size="small" custom-class="fb-btn fb-btn--primary" loading="{{submitting}}" bindtap="submitReply">发送</van-button>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+    <view wx:if="{{!hasMore && list.length > 0}}" class="no-more">没有更多了</view>
+  </block>
+</view>

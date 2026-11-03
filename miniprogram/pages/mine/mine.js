@@ -122,6 +122,17 @@ Page({
     }); 
   },
 
+  goAdminFeedback() {
+    console.log('goAdminFeedback clicked');   // 临时日志，先确认事件是否触发
+    wx.navigateTo({
+      url: '/pages/admin/feedback/feedback',
+      fail: (err) => {
+        console.error('navigateTo fail', err);
+        wx.showToast({ title: '跳转失败', icon: 'none' });
+      }
+    });
+  },
+
   /** 复制邮箱 */
   copyEmail() {
     wx.setClipboardData({ data: this.data.email });
