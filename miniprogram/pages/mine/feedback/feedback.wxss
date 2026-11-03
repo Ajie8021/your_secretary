@@ -115,15 +115,67 @@
 }
 
 /* ================= 操作区 ================= */
+/* 同一行：nowrap；宽度严格限制在卡片内 */
 .fb-actions {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   margin-top: 18rpx;
+  box-sizing: border-box;
 }
 
-.fb-actions .van-button {
-  margin-left: 16rpx;
-  border-radius: 32rpx;
+/* ================= 按钮基础 ================= */
+/* 收敛 Vant 默认尺寸；两按钮各占约一半，中间留间距 */
+.fb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 calc((100% - 16rpx) / 2);  /* 显式等分，扣掉中间间距 */
+  min-width: 0;
+  max-width: calc((100% - 16rpx) / 2);
+  height: 60rpx;
+  padding: 0;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  line-height: 1;
+  box-sizing: border-box;
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* 取消：#CFE3D7 主色（描边款） */
+.fb-btn--cancel {
+  color: #5C7A68 !important;
+  background: #FFFFFF !important;
+  border: 1rpx solid #CFE3D7 !important;
+}
+
+.fb-btn--cancel:active {
+  background: #F1F7F3 !important;
+}
+
+/* 修改 / 保存：#70AD91 主色（常态即绿，实心款） */
+.fb-btn--primary {
+  color: #FFFFFF !important;
+  background: #70AD91 !important;
+  border: 1rpx solid #70AD91 !important;
+  box-shadow: 0 6rpx 16rpx rgba(86, 151, 116, 0.22);
+}
+
+.fb-btn--primary:active {
+  background: #5C9A7E !important;
+  border-color: #5C9A7E !important;
+}
+
+.fb-actions--single {
+  justify-content: flex-end;
+}
+.fb-actions--single .fb-btn {
+  flex: 0 0 auto;
+  width: 160rpx;
+  max-width: 160rpx;
 }
 
 /* ================= 编辑区 ================= */

@@ -27,15 +27,15 @@
       <view class="fb-time">{{item.repliedAt}}</view>
     </view>
 
-    <view wx:if="{{!item.replied && editingId !== item.id}}" class="fb-actions">
-      <van-button size="small" data-id="{{item.id}}" bindtap="startEdit">修改</van-button>
+    <view wx:if="{{!item.replied && editingId !== item.id}}" class="fb-actions fb-actions--single">
+      <van-button size="small" custom-class="fb-btn fb-btn--primary" data-id="{{item.id}}" bindtap="startEdit">修改</van-button>
     </view>
 
     <view wx:if="{{editingId === item.id}}" class="fb-edit">
       <van-field value="{{editContent}}" type="textarea" autosize border="{{false}}" bind:change="onEditInput" />
       <view class="fb-actions">
-        <van-button size="small" bindtap="cancelEdit">取消</van-button>
-        <van-button size="small" type="primary" bindtap="saveEdit">保存</van-button>
+        <van-button size="small" custom-class="fb-btn fb-btn--cancel" bindtap="cancelEdit">取消</van-button>
+        <van-button size="small" custom-class="fb-btn fb-btn--primary" bindtap="saveEdit">保存</van-button>
       </view>
     </view>
   </view>
