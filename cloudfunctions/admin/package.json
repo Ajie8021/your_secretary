@@ -1,0 +1,9 @@
+{
+  "name": "admin",
+  "version": "1.0.0",
+  "description": "管理员反馈管理云函数",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" },
+  "devDependencies": { "jest": "^29.7.0" },
+  "scripts": { "test": "jest" }
+}
