@@ -140,10 +140,7 @@ Page({
           f.tempFilePath.match(/\.[a-zA-Z0-9]+$/) || ['.jpg']
         )[0];
 
-        const cloudPath = `note-images/
-          ${Date.now()}
-          _${Math.random().toString(36).slice(2)}
-          ${ext}`;
+        const cloudPath = `debug/${Date.now()}.jpg`;
         
         const up = await wx.cloud.uploadFile({
           cloudPath, filePath: f.tempFilePath 
