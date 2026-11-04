@@ -19,5 +19,29 @@ App({
     userInfo: null,
     // 是否已完成登录初始化
     loggedIn: false
+  },
+
+  /**
+   * 确保已登录：调用 login 云函数，结果写入 globalData
+   * @returns {Promise<object|null>} 用户资料；失败返回 null
+   */
+  async ensureLogin() {
+    if (this.globalData.loggedIn && this.globalData.user) {
+      return this.globalData.user;
+    }
+    try {
+      const res = await wx.cloud.callFunction({ name: 'login', data: {} });
+      const result = res.result;
+      if (!result || result.code !== 0) {
+        console.error('[app] login fail', result && result.message);
+        return null;
+      }
+      this.globalData.user = result.data.user;
+      this.globalData.loggedIn = true;
+      return result.data.user;
+    } catch (e) {
+      console.error('[app] login error', e);
+      return null;
+    }
   }
 });
