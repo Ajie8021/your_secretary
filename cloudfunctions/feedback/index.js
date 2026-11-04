@@ -3,8 +3,8 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
 const feedbacks = db.collection('feedbacks');
+const { success, failure } = require('./response');
 const { 
-  ok, fail, 
   toFeedbackView, 
   normalizePaging 
 } = require('./utils');
@@ -29,7 +29,7 @@ async function handleListMine(openid, event) {
     .limit(pageSize)
     .get();
 
-  return ok({
+  return success({
     list: listRes.data.map(toFeedbackView), total, page, pageSize, 
     hasMore: page * pageSize < total
   });
@@ -43,7 +43,7 @@ async function handleListMine(openid, event) {
 async function handleCreate(openid, event) {
   const content = typeof event.content === 'string' ? event.content.trim() : '';
   if (!content) 
-    return fail(400, '反馈内容不能为空');
+    return failure(400, '反馈内容不能为空');
   const doc = {
     _openid: openid, content, 
     reply: '', 
@@ -51,7 +51,7 @@ async function handleCreate(openid, event) {
     createTime: new Date()
   };
   const addRes = await feedbacks.add({ data: doc });
-  return ok({ 
+  return success({ 
     feedback: toFeedbackView({ _id: addRes._id, ...doc }) 
   });
 }
@@ -65,10 +65,10 @@ async function handleCreate(openid, event) {
 async function handleUpdate(openid, event) {
   const id = event.id;
   if (!id || typeof id !== 'string') 
-    return fail(400, 'id 不能为空');
+    return failure(400, 'id 不能为空');
   const content = typeof event.content === 'string' ? event.content.trim() : '';
   if (!content) 
-    return fail(400, '反馈内容不能为空');
+    return failure(400, '反馈内容不能为空');
 
   // 先按 id 查（不限定 openid），用于区分"不存在/非本人"与"已回复"
   const byId = await feedbacks.where({ 
@@ -76,13 +76,13 @@ async function handleUpdate(openid, event) {
   }).limit(1).get();
 
   if (byId.data.length === 0) 
-    return fail(404, '反馈不存在');
+    return failure(404, '反馈不存在');
 
   const doc = byId.data[0];
   if (doc._openid !== openid) 
-    return fail(404, '反馈不存在'); // 不泄露他人数据存在性
+    return failure(404, '反馈不存在'); // 不泄露他人数据存在性
   if (doc.reply) 
-    return fail(409, '反馈已回复，不能再修改');
+    return failure(409, '反馈已回复，不能再修改');
 
   await feedbacks.where({ 
     _id: id, _openid: openid 
@@ -91,12 +91,12 @@ async function handleUpdate(openid, event) {
   const after = await feedbacks.where({ 
     _id: id, _openid: openid 
   }).limit(1).get();
-  return ok({ feedback: toFeedbackView(after.data[0]) });
+  return success({ feedback: toFeedbackView(after.data[0]) });
 }
 
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
-  if (!OPENID) return fail(401, '未识别当前用户');
+  if (!OPENID) return failure(401, '未识别当前用户');
 
   const action = event && event.action;
   const handlers = { 
@@ -107,7 +107,7 @@ exports.main = async (event) => {
   const handler = handlers[action];
 
   if (!handler) 
-    return fail(400, `未知 action: ${action}`);
+    return failure(400, `未知 action: ${action}`);
 
   try {
     return await handler(OPENID, event);
@@ -117,6 +117,6 @@ exports.main = async (event) => {
       action, 
       err && err.message ? err.message : err
     );
-    return fail(500, '服务端错误，请稍后重试');
+    return failure(500, '服务端错误，请稍后重试');
   }
 };

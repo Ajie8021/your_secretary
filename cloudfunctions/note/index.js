@@ -4,15 +4,9 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const notes = db.collection('notes');
 
-// ======================== 公共常量与工具 ========================
-
-const PAGE_DEFAULT = 1;
-const PAGE_SIZE_DEFAULT = 20;
-const PAGE_SIZE_MAX = 100;
-
+const { success, failure } = require('./response');
 const {
   DEFAULT_TITLE, 
-  ok, fail, 
   toNoteView, 
   normalizePaging, 
   isValidImages
@@ -69,7 +63,7 @@ async function handleList(openid, event) {
     return view;
   });
 
-  return ok({
+  return success({
     list,
     total,
     page,
@@ -84,8 +78,8 @@ async function handleList(openid, event) {
  */
 async function handleDetail(openid, event) {
   const doc = await findOwnNote(event.id, openid);
-  if (!doc) return fail(404, '随笔不存在或无权访问');
-  return ok({ note: toNoteView(doc) });
+  if (!doc) return failure(404, '随笔不存在或无权访问');
+  return success({ note: toNoteView(doc) });
 }
 
 /**
@@ -98,8 +92,8 @@ async function handleCreate(openid, event) {
   const title = titleRaw || DEFAULT_TITLE;
   const content = typeof event.content === 'string' ? event.content.trim() : '';
 
-  if (!content) return fail(400, '随笔正文不能为空');
-  if (!isValidImages(event.images)) return fail(400, 'images 必须为 fileID 字符串数组');
+  if (!content) return failure(400, '随笔正文不能为空');
+  if (!isValidImages(event.images)) return failure(400, 'images 必须为 fileID 字符串数组');
 
   const now = new Date();
   const doc = {
@@ -112,7 +106,7 @@ async function handleCreate(openid, event) {
   };
 
   const addRes = await notes.add({ data: doc });
-  return ok({
+  return success({
     note: toNoteView({ _id: addRes._id, ...doc })
   });
 }
@@ -125,7 +119,7 @@ async function handleCreate(openid, event) {
  */
 async function handleUpdate(openid, event) {
   const doc = await findOwnNote(event.id, openid);
-  if (!doc) return fail(404, '随笔不存在或无权访问');
+  if (!doc) return failure(404, '随笔不存在或无权访问');
 
   const patch = {};
 
@@ -135,24 +129,24 @@ async function handleUpdate(openid, event) {
   }
   if (event.content !== undefined) {
     const c = typeof event.content === 'string' ? event.content.trim() : '';
-    if (!c) return fail(400, '随笔正文不能为空');
+    if (!c) return failure(400, '随笔正文不能为空');
     patch.content = c;
   }
   if (event.images !== undefined) {
     if (!isValidImages(event.images)) 
-      return fail(400, 'images 必须为 fileID 字符串数组');
+      return failure(400, 'images 必须为 fileID 字符串数组');
     patch.images = event.images;
   }
 
   if (Object.keys(patch).length === 0) 
-    return fail(400, '没有可更新的字段');
+    return failure(400, '没有可更新的字段');
 
   await notes.where({ 
     _id: event.id, _openid: openid 
   }).update({ data: patch });
 
   const updated = await findOwnNote(event.id, openid);
-  return ok({ note: toNoteView(updated) });
+  return success({ note: toNoteView(updated) });
 }
 
 /**
@@ -161,12 +155,12 @@ async function handleUpdate(openid, event) {
  */
 async function handleDelete(openid, event) {
   const doc = await findOwnNote(event.id, openid);
-  if (!doc) return fail(404, '随笔不存在或无权访问');
+  if (!doc) return failure(404, '随笔不存在或无权访问');
 
   await notes.where({ _id: event.id, _openid: openid }).remove();
   // 说明：云存储图片清理属于独立策略。MVP 可先记录待清理日志，
   // 由后续清理任务统一处理，避免删记录与删文件非原子导致误删。
-  return ok({ id: event.id, deleted: true });
+  return success({ id: event.id, deleted: true });
 }
 
 /**
@@ -175,13 +169,13 @@ async function handleDelete(openid, event) {
  */
 async function handleToggleTop(openid, event) {
   const doc = await findOwnNote(event.id, openid);
-  if (!doc) return fail(404, '随笔不存在或无权访问');
+  if (!doc) return failure(404, '随笔不存在或无权访问');
 
   const next = !doc.top;
   await notes.where({ 
     _id: event.id, _openid: openid 
   }).update({ data: { top: next } });
-  return ok({ id: event.id, top: next });
+  return success({ id: event.id, top: next });
 }
 
 // ======================== 入口 ========================
@@ -192,7 +186,7 @@ async function handleToggleTop(openid, event) {
  */
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
-  if (!OPENID) return fail(401, '未识别当前用户');
+  if (!OPENID) return failure(401, '未识别当前用户');
 
   const action = event && event.action;
   const handlers = {
@@ -205,12 +199,12 @@ exports.main = async (event) => {
   };
 
   const handler = handlers[action];
-  if (!handler) return fail(400, `未知 action: ${action}`);
+  if (!handler) return failure(400, `未知 action: ${action}`);
 
   try {
     return await handler(OPENID, event);
   } catch (err) {
     console.error('[note] action=%s error=%s', action, err && err.message ? err.message : err);
-    return fail(500, '服务端错误，请稍后重试');
+    return failure(500, '服务端错误，请稍后重试');
   }
 };

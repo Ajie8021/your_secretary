@@ -2,13 +2,6 @@ const PAGE_DEFAULT = 1;
 const PAGE_SIZE_DEFAULT = 20;
 const PAGE_SIZE_MAX = 100;
 
-function ok(data = {}) { 
-  return { code: 0, message: 'ok', data }; 
-}
-function fail(code, message) { 
-  return { code, message, data: null }; 
-}
-
 /**
  * 反馈视图（管理端）
  * @param {object} doc feedbacks 文档
@@ -47,7 +40,6 @@ function normalizeReply(reply) {
 }
 
 module.exports = { 
-  ok, fail, 
   toAdminFeedbackView, 
   normalizePaging, 
   normalizeReply 

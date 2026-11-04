@@ -2,13 +2,6 @@ const PAGE_DEFAULT = 1;
 const PAGE_SIZE_DEFAULT = 20;
 const PAGE_SIZE_MAX = 100;
 
-function ok(data = {}) { 
-  return { code: 0, message: 'ok', data }; 
-}
-function fail(code, message) { 
-  return { code, message, data: null }; 
-}
-
 /**
  * 反馈视图：对外用 id，不暴露 _openid
  * 附带 replied 布尔便于前端判断是否可编辑
@@ -38,7 +31,6 @@ function normalizePaging(page, pageSize) {
 }
 
 module.exports = { 
-  ok, fail, 
   toFeedbackView, 
   normalizePaging 
 };

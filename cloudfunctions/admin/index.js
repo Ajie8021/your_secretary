@@ -5,7 +5,10 @@ const db = cloud.database();
 const admins = db.collection('admins');
 const feedbacks = db.collection('feedbacks');
 const { 
-  ok, fail, 
+  success, 
+  failure 
+} = require('./response');
+const { 
   toAdminFeedbackView, 
   normalizePaging, 
   normalizeReply 
@@ -31,7 +34,7 @@ async function isAdmin(openid) {
  */
 async function handleCheck(openid) {
   const admin = await isAdmin(openid);
-  return ok({ isAdmin: admin });
+  return success({ isAdmin: admin });
 }
 
 /**
@@ -41,7 +44,7 @@ async function handleCheck(openid) {
  */
 async function handleListFeedbacks(openid, event) {
   if (!(await isAdmin(openid))) 
-    return fail(403, '无管理员权限');
+    return failure(403, '无管理员权限');
 
   const { page, pageSize } = normalizePaging(
     event.page, 
@@ -55,7 +58,7 @@ async function handleListFeedbacks(openid, event) {
     .limit(pageSize)
     .get();
 
-  return ok({
+  return success({
     list: listRes.data.map(toAdminFeedbackView),
     total, page, pageSize, 
     hasMore: page * pageSize < total
@@ -69,22 +72,22 @@ async function handleListFeedbacks(openid, event) {
  */
 async function handleReplyFeedback(openid, event) {
   if (!(await isAdmin(openid))) 
-    return fail(403, '无管理员权限');
+    return failure(403, '无管理员权限');
 
   const id = event.id;
   if (!id || typeof id !== 'string') 
-    return fail(400, 'id 不能为空');
+    return failure(400, 'id 不能为空');
 
   const reply = normalizeReply(event.reply);
-  if (!reply) return fail(400, '回复内容不能为空');
+  if (!reply) return failure(400, '回复内容不能为空');
 
   // 先查记录是否存在、是否已回复
   const byId = await feedbacks
     .where({ _id: id })
     .limit(1)
     .get();
-  if (byId.data.length === 0) return fail(404, '反馈不存在');
-  if (byId.data[0].reply) return fail(409, '该反馈已回复');
+  if (byId.data.length === 0) return failure(404, '反馈不存在');
+  if (byId.data[0].reply) return failure(409, '该反馈已回复');
 
   const now = new Date();
   await feedbacks.where({ _id: id }).update({
@@ -96,14 +99,14 @@ async function handleReplyFeedback(openid, event) {
     .limit(1)
     .get();
 
-  return ok({ 
+  return success({ 
     feedback: toAdminFeedbackView(after.data[0]) 
   });
 }
 
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
-  if (!OPENID) return fail(401, '未识别当前用户');
+  if (!OPENID) return failure(401, '未识别当前用户');
 
   const action = event && event.action;
   const handlers = {
@@ -112,7 +115,7 @@ exports.main = async (event) => {
     replyFeedback: handleReplyFeedback
   };
   const handler = handlers[action];
-  if (!handler) return fail(400, `未知 action: ${action}`);
+  if (!handler) return failure(400, `未知 action: ${action}`);
 
   try {
     return await handler(OPENID, event);
@@ -124,6 +127,6 @@ exports.main = async (event) => {
       err && err.errMsg ? err.errMsg : (err && err.message),
       err && err.stack
     );
-    return fail(500, '服务端错误，请稍后重试');
+    return failure(500, '服务端错误，请稍后重试');
   }
 };

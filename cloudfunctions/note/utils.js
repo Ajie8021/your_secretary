@@ -5,23 +5,6 @@ const PAGE_SIZE_DEFAULT = 20;
 const PAGE_SIZE_MAX = 100;
 
 /**
- * 统一成功响应
- * @param {*} data 业务数据
- */
-function ok(data = {}) {
-  return { code: 0, message: 'ok', data };
-}
-
-/**
- * 统一失败响应
- * @param {number} code 错误码
- * @param {string} message 可展示信息
- */
-function fail(code, message) {
-  return { code, message, data: null };
-}
-
-/**
  * 将数据库记录转为对外对象
  * 对外用 id 代替 _id，且不暴露 _openid
  * @param {object} doc 数据库文档
@@ -72,4 +55,9 @@ function isValidImages(images) {
   );
 }
 
-module.exports = { DEFAULT_TITLE, ok, fail, toNoteView, normalizePaging, isValidImages };
+module.exports = { 
+  DEFAULT_TITLE, 
+  toNoteView, 
+  normalizePaging, 
+  isValidImages 
+};

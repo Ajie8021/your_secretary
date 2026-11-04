@@ -8,13 +8,6 @@ const PROFILE_WHITELIST = [
 ];
 const GENDERS = ['男', '女', '保密'];
 
-function ok(data = {}) { 
-  return { code: 0, message: 'ok', data }; 
-}
-function fail(code, message) { 
-  return { code, message, data: null }; 
-}
-
 /**
  * 提取用户资料视图（不含内部受控字段以外的敏感内容）
  * @param {object} doc users 文档
@@ -71,7 +64,6 @@ function pickProfilePatch(event) {
 
 module.exports = { 
   PROFILE_WHITELIST, 
-  ok, fail, 
   toUserView, 
   pickProfilePatch 
 };

@@ -3,8 +3,8 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
 const users = db.collection('users');
+const { success, failure } = require('./response');
 const { 
-  ok, fail, 
   toUserView, 
   pickProfilePatch 
 } = require('./utils');
@@ -28,9 +28,9 @@ async function handleGetProfile(openid) {
       createTime: now
     };
     await users.add({ data: doc });
-    return ok({ user: toUserView(doc) });
+    return success({ user: toUserView(doc) });
   }
-  return ok({ user: toUserView(res.data[0]) });
+  return success({ user: toUserView(res.data[0]) });
 }
 
 /**
@@ -40,16 +40,16 @@ async function handleGetProfile(openid) {
  */
 async function handleUpdateProfile(openid, event) {
   const { patch, error } = pickProfilePatch(event);
-  if (error) return fail(400, error);
+  if (error) return failure(400, error);
   if (Object.keys(patch).length === 0) 
-    return fail(400, '没有可更新的资料字段');
+    return failure(400, '没有可更新的资料字段');
 
   const res = await users.where({ 
     _openid: openid 
   }).limit(1).get();
 
   if (res.data.length === 0) 
-    return fail(404, '用户不存在，请重新登录');
+    return failure(404, '用户不存在，请重新登录');
 
   await users.where({ 
     _openid: openid 
@@ -59,12 +59,12 @@ async function handleUpdateProfile(openid, event) {
     _openid: openid 
   }).limit(1).get();
 
-  return ok({ user: toUserView(after.data[0]) });
+  return success({ user: toUserView(after.data[0]) });
 }
 
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
-  if (!OPENID) return fail(401, '未识别当前用户');
+  if (!OPENID) return failure(401, '未识别当前用户');
 
   const action = event && event.action;
   const handlers = { 
@@ -73,7 +73,7 @@ exports.main = async (event) => {
   };
   const handler = handlers[action];
 
-  if (!handler) return fail(400, `未知 action: ${action}`);
+  if (!handler) return failure(400, `未知 action: ${action}`);
 
   try {
     return action === 'getProfile' ? await handler(OPENID) : await handler(OPENID, event);
@@ -84,6 +84,6 @@ exports.main = async (event) => {
       action, 
       err && err.message ? err.message : err);
       
-    return fail(500, '服务端错误，请稍后重试');
+    return failure(500, '服务端错误，请稍后重试');
   }
 };
