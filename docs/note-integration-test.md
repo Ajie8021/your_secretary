@@ -25,7 +25,7 @@ CRUD、默认标题"无题"、置顶、排序（top 降序 + createTime 降序�
 
 | 编号  | 测试内容                                      | 预期结果 | 实际结果 |
 | ----- | --------------------------------------------- | -------- | -------- |
-| UT-01 | `toNoteView` 用 id 替代 _id，且不返回 _openid |          |          |
+| UT-01 | `toNoteView` 用 id 替代 _id，且不返回 _openid | 通过     | 已通过   |
 | UT-02 | `toNoteView` images 缺省返回 []               | 通过     | 已通过   |
 | UT-03 | `normalizePaging` 缺省 → {1,20}               | 通过     | 已通过   |
 | UT-04 | `normalizePaging` 非法页码回退                | 通过     | 已通过   |
